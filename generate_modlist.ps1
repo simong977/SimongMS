@@ -4,9 +4,11 @@ $modFiles = Get-ChildItem -Path $modsPath -Filter *.jar
 $entries = @()
 
 foreach ($file in $modFiles) {
+    $encodedFileName = [System.Uri]::EscapeDataString($file.Name)
+
     $entry = @{
-        filename = $file.Name
-        url = "$baseUrl/$($file.Name)"
+        filename = $file.Name                  # 실제 파일명 (공백 포함)
+        url      = "$baseUrl/$encodedFileName" # 공백 → %20 등 인코딩
     }
     $entries += $entry
 }
