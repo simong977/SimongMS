@@ -1,330 +1,326 @@
 ﻿[
     {
-        "filename":  "Adorn-6.0.1+1.21.1-neoforge.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/Adorn-6.0.1+1.21.1-neoforge.jar"
+        "filename":  "Adorn-6.0.1-1.21.1-neoforge.jar",
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/Adorn-6.0.1+1.21.1-neoforge.jar"
     },
     {
         "filename":  "AI-Improvements-1.21-0.5.3.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/AI-Improvements-1.21-0.5.3.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/AI-Improvements-1.21-0.5.3.jar"
     },
     {
         "filename":  "AmbientEnvironment-neoforge-1.21.1-18.0.0.2.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/AmbientEnvironment-neoforge-1.21.1-18.0.0.2.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/AmbientEnvironment-neoforge-1.21.1-18.0.0.2.jar"
     },
     {
         "filename":  "appleskin-neoforge-mc1.21-3.0.5.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/appleskin-neoforge-mc1.21-3.0.5.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/appleskin-neoforge-mc1.21-3.0.5.jar"
     },
     {
         "filename":  "architectury-13.0.8-neoforge.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/architectury-13.0.8-neoforge.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/architectury-13.0.8-neoforge.jar"
     },
     {
         "filename":  "balm-neoforge-1.21.1-21.0.45.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/balm-neoforge-1.21.1-21.0.45.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/balm-neoforge-1.21.1-21.0.45.jar"
     },
     {
         "filename":  "BetterAdvancements-NeoForge-1.21.1-0.4.3.21.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/BetterAdvancements-NeoForge-1.21.1-0.4.3.21.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/BetterAdvancements-NeoForge-1.21.1-0.4.3.21.jar"
     },
     {
         "filename":  "BetterPingDisplay-1.21.1-1.1.0.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/BetterPingDisplay-1.21.1-1.1.0.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/BetterPingDisplay-1.21.1-1.1.0.jar"
     },
     {
         "filename":  "BetterThirdPerson-neoforge-1.9.0.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/BetterThirdPerson-neoforge-1.9.0.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/BetterThirdPerson-neoforge-1.9.0.jar"
     },
     {
         "filename":  "BHMenu-NeoForge-1.21-2.4.3.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/BHMenu-NeoForge-1.21-2.4.3.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/BHMenu-NeoForge-1.21-2.4.3.jar"
     },
     {
         "filename":  "bookshelf-neoforge-1.21.1-21.1.43.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/bookshelf-neoforge-1.21.1-21.1.43.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/bookshelf-neoforge-1.21.1-21.1.43.jar"
     },
     {
         "filename":  "bwncr-neoforge-1.21.1-3.20.2.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/bwncr-neoforge-1.21.1-3.20.2.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/bwncr-neoforge-1.21.1-3.20.2.jar"
     },
     {
         "filename":  "caramelChat-mc1.21.1-neoforge-1.2.2.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/caramelChat-mc1.21.1-neoforge-1.2.2.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/caramelChat-mc1.21.1-neoforge-1.2.2.jar"
     },
     {
         "filename":  "cherishedworlds-neoforge-10.1.0+1.21.1.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/cherishedworlds-neoforge-10.1.0+1.21.1.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/cherishedworlds-neoforge-10.1.0+1.21.1.jar"
     },
     {
         "filename":  "cloth-config-15.0.140-neoforge.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/cloth-config-15.0.140-neoforge.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/cloth-config-15.0.140-neoforge.jar"
     },
     {
         "filename":  "Clumps-neoforge-1.21.1-19.0.0.1.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/Clumps-neoforge-1.21.1-19.0.0.1.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/Clumps-neoforge-1.21.1-19.0.0.1.jar"
     },
     {
         "filename":  "CobbleDollars-neoforge-2.0.0+Beta-5.1+1.21.1.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/CobbleDollars-neoforge-2.0.0+Beta-5.1+1.21.1.jar"
-    },
-    {
-        "filename":  "Cobblemon-neoforge-1.6.1+1.21.1.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/Cobblemon-neoforge-1.6.1+1.21.1.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/CobbleDollars-neoforge-2.0.0+Beta-5.1+1.21.1.jar"
     },
     {
         "filename":  "cobblemon-spawn-notification-1.6-neoforge-1.3.7.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/cobblemon-spawn-notification-1.6-neoforge-1.3.7.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/cobblemon-spawn-notification-1.6-neoforge-1.3.7.jar"
     },
     {
         "filename":  "cobblemonintegrations-neoforge-1.21.1-1.1.2.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/cobblemonintegrations-neoforge-1.21.1-1.1.2.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/cobblemonintegrations-neoforge-1.21.1-1.1.2.jar"
     },
     {
         "filename":  "CobblemonMoveInspector-neoforge-1.2.0.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/CobblemonMoveInspector-neoforge-1.2.0.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/CobblemonMoveInspector-neoforge-1.2.0.jar"
     },
     {
         "filename":  "Cobblemon_MegaShowdown-9.7.11-release-neoforge.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/Cobblemon_MegaShowdown-9.7.11-release-neoforge.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/Cobblemon_MegaShowdown-9.7.11-release-neoforge.jar"
     },
     {
         "filename":  "cobblenav-neoforge-2.2.3.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/cobblenav-neoforge-2.2.3.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/cobblenav-neoforge-2.2.3.jar"
     },
     {
         "filename":  "cobbleride-neoforge-0.3.2+1.21.1.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/cobbleride-neoforge-0.3.2+1.21.1.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/cobbleride-neoforge-0.3.2+1.21.1.jar"
     },
     {
         "filename":  "collective-1.21.1-7.87.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/collective-1.21.1-7.87.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/collective-1.21.1-7.87.jar"
     },
     {
         "filename":  "craftingtweaks-neoforge-1.21.1-21.1.5.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/craftingtweaks-neoforge-1.21.1-21.1.5.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/craftingtweaks-neoforge-1.21.1-21.1.5.jar"
     },
     {
         "filename":  "CraftPresence-2.5.3+1.21.1-neoforge.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/CraftPresence-2.5.3+1.21.1-neoforge.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/CraftPresence-2.5.3+1.21.1-neoforge.jar"
     },
     {
         "filename":  "ctapi-neoforge-1.21.1-0.13.6-beta.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/ctapi-neoforge-1.21.1-0.13.6-beta.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/ctapi-neoforge-1.21.1-0.13.6-beta.jar"
     },
     {
         "filename":  "curios-neoforge-9.5.1+1.21.1.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/curios-neoforge-9.5.1+1.21.1.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/curios-neoforge-9.5.1+1.21.1.jar"
     },
     {
         "filename":  "defaultoptions-neoforge-1.21.1-21.1.2.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/defaultoptions-neoforge-1.21.1-21.1.2.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/defaultoptions-neoforge-1.21.1-21.1.2.jar"
     },
     {
         "filename":  "dismountentity-1.21.1-3.5.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/dismountentity-1.21.1-3.5.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/dismountentity-1.21.1-3.5.jar"
     },
     {
         "filename":  "dynamic-fps-3.7.7+minecraft-1.21.0-neoforge.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/dynamic-fps-3.7.7+minecraft-1.21.0-neoforge.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/dynamic-fps-3.7.7+minecraft-1.21.0-neoforge.jar"
     },
     {
         "filename":  "dynamiccrosshair-9.3+1.21.1-neoforge.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/dynamiccrosshair-9.3+1.21.1-neoforge.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/dynamiccrosshair-9.3+1.21.1-neoforge.jar"
     },
     {
         "filename":  "enchdesc-neoforge-1.21.1-21.1.5.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/enchdesc-neoforge-1.21.1-21.1.5.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/enchdesc-neoforge-1.21.1-21.1.5.jar"
     },
     {
         "filename":  "enhanced_attack_indicator-1.1.1+1.21.1-forge.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/enhanced_attack_indicator-1.1.1+1.21.1-forge.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/enhanced_attack_indicator-1.1.1+1.21.1-forge.jar"
     },
     {
         "filename":  "entityculling-neoforge-1.7.2-mc1.21.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/entityculling-neoforge-1.7.2-mc1.21.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/entityculling-neoforge-1.7.2-mc1.21.jar"
     },
     {
         "filename":  "fallingleaves-1.21.1-2.0.5.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/fallingleaves-1.21.1-2.0.5.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/fallingleaves-1.21.1-2.0.5.jar"
     },
     {
         "filename":  "fancymenu_neoforge-3.3.2_MC_1.21.1.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/fancymenu_neoforge-3.3.2_MC_1.21.1.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/fancymenu_neoforge-3.3.2_MC_1.21.1.jar"
     },
     {
         "filename":  "ferritecore-7.0.2-neoforge.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/ferritecore-7.0.2-neoforge.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/ferritecore-7.0.2-neoforge.jar"
     },
     {
         "filename":  "fightorflight-neoforge-0.8.1.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/fightorflight-neoforge-0.8.1.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/fightorflight-neoforge-0.8.1.jar"
     },
     {
         "filename":  "ForgeConfigAPIPort-v21.1.3-1.21.1-NeoForge.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/ForgeConfigAPIPort-v21.1.3-1.21.1-NeoForge.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/ForgeConfigAPIPort-v21.1.3-1.21.1-NeoForge.jar"
     },
     {
         "filename":  "highlight-neoforge-1.21.1-3.0.0.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/highlight-neoforge-1.21.1-3.0.0.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/highlight-neoforge-1.21.1-3.0.0.jar"
     },
     {
         "filename":  "Highlighter-1.21-neoforge-1.1.11.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/Highlighter-1.21-neoforge-1.1.11.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/Highlighter-1.21-neoforge-1.1.11.jar"
     },
     {
         "filename":  "Iceberg-1.21.1-neoforge-1.2.9.2.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/Iceberg-1.21.1-neoforge-1.2.9.2.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/Iceberg-1.21.1-neoforge-1.2.9.2.jar"
     },
     {
         "filename":  "ImmediatelyFast-NeoForge-1.3.4+1.21.1.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/ImmediatelyFast-NeoForge-1.3.4+1.21.1.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/ImmediatelyFast-NeoForge-1.3.4+1.21.1.jar"
     },
     {
         "filename":  "InvMove-1.21-0.8.8-NeoForge.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/InvMove-1.21-0.8.8-NeoForge.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/InvMove-1.21-0.8.8-NeoForge.jar"
     },
     {
         "filename":  "iris-neoforge-1.8.6+mc1.21.1.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/iris-neoforge-1.8.6+mc1.21.1.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/iris-neoforge-1.8.6+mc1.21.1.jar"
     },
     {
         "filename":  "konkrete_neoforge-1.9.9_MC_1.21.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/konkrete_neoforge-1.9.9_MC_1.21.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/konkrete_neoforge-1.9.9_MC_1.21.jar"
     },
     {
         "filename":  "kotlinforforge-5.7.0-all.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/kotlinforforge-5.7.0-all.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/kotlinforforge-5.7.0-all.jar"
     },
     {
         "filename":  "lambdynamiclights-3.1.4-neo-0+1.21.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/lambdynamiclights-3.1.4-neo-0+1.21.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/lambdynamiclights-3.1.4-neo-0+1.21.jar"
     },
     {
         "filename":  "languagereload-neoforge-1.21.1-1.0.2.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/languagereload-neoforge-1.21.1-1.0.2.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/languagereload-neoforge-1.21.1-1.0.2.jar"
     },
     {
         "filename":  "lithium-neoforge-0.14.7+mc1.21.1.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/lithium-neoforge-0.14.7+mc1.21.1.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/lithium-neoforge-0.14.7+mc1.21.1.jar"
     },
     {
         "filename":  "LongerChatHistory-neoforge-1.6.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/LongerChatHistory-neoforge-1.6.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/LongerChatHistory-neoforge-1.6.jar"
     },
     {
         "filename":  "melody_neoforge-1.0.10_MC_1.21.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/melody_neoforge-1.0.10_MC_1.21.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/melody_neoforge-1.0.10_MC_1.21.jar"
     },
     {
         "filename":  "netherportalfix-neoforge-1.21.1-21.1.1.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/netherportalfix-neoforge-1.21.1-21.1.1.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/netherportalfix-neoforge-1.21.1-21.1.1.jar"
     },
     {
         "filename":  "notenoughanimations-neoforge-1.9.1-mc1.21.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/notenoughanimations-neoforge-1.9.1-mc1.21.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/notenoughanimations-neoforge-1.9.1-mc1.21.jar"
     },
     {
         "filename":  "prickle-neoforge-1.21.1-21.1.6.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/prickle-neoforge-1.21.1-21.1.6.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/prickle-neoforge-1.21.1-21.1.6.jar"
     },
     {
         "filename":  "rctmod-neoforge-1.21.1-0.16.5-beta.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/rctmod-neoforge-1.21.1-0.16.5-beta.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/rctmod-neoforge-1.21.1-0.16.5-beta.jar"
     },
     {
         "filename":  "reeses-sodium-options-neoforge-1.8.3+mc1.21.4.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/reeses-sodium-options-neoforge-1.8.3+mc1.21.4.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/reeses-sodium-options-neoforge-1.8.3+mc1.21.4.jar"
     },
     {
         "filename":  "rhino-2101.2.7-build.74.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/rhino-2101.2.7-build.74.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/rhino-2101.2.7-build.74.jar"
     },
     {
         "filename":  "RingOfReturn-NeoForge-1.21.1-1.8.3.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/RingOfReturn-NeoForge-1.21.1-1.8.3.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/RingOfReturn-NeoForge-1.21.1-1.8.3.jar"
     },
     {
         "filename":  "RoughlyEnoughItems-16.0.788-neoforge.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/RoughlyEnoughItems-16.0.788-neoforge.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/RoughlyEnoughItems-16.0.788-neoforge.jar"
     },
     {
         "filename":  "RoughlyEnoughProfessions-neoforge-1.21.1-4.0.3.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/RoughlyEnoughProfessions-neoforge-1.21.1-4.0.3.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/RoughlyEnoughProfessions-neoforge-1.21.1-4.0.3.jar"
     },
     {
         "filename":  "shulkerboxtooltip-neoforge-5.1.3+1.21.1.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/shulkerboxtooltip-neoforge-5.1.3+1.21.1.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/shulkerboxtooltip-neoforge-5.1.3+1.21.1.jar"
     },
     {
         "filename":  "sodium-extra-neoforge-0.6.0+mc1.21.1.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/sodium-extra-neoforge-0.6.0+mc1.21.1.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/sodium-extra-neoforge-0.6.0+mc1.21.1.jar"
     },
     {
         "filename":  "sodium-neoforge-0.6.5+mc1.21.1.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/sodium-neoforge-0.6.5+mc1.21.1.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/sodium-neoforge-0.6.5+mc1.21.1.jar"
     },
     {
         "filename":  "sodium-shadowy-path-blocks-neoforge-4.0.0.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/sodium-shadowy-path-blocks-neoforge-4.0.0.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/sodium-shadowy-path-blocks-neoforge-4.0.0.jar"
     },
     {
         "filename":  "sodiumextras-neoforge-1.0.7-1.21.1.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/sodiumextras-neoforge-1.0.7-1.21.1.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/sodiumextras-neoforge-1.0.7-1.21.1.jar"
     },
     {
         "filename":  "sodiumleafculling-neoforge-1.0.0-1.21.1.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/sodiumleafculling-neoforge-1.0.0-1.21.1.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/sodiumleafculling-neoforge-1.0.0-1.21.1.jar"
     },
     {
         "filename":  "sodiumoptionsapi-neoforge-1.0.10-1.21.1.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/sodiumoptionsapi-neoforge-1.0.10-1.21.1.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/sodiumoptionsapi-neoforge-1.0.10-1.21.1.jar"
     },
     {
         "filename":  "sodiumoptionsmodcompat-neoforge-1.0.0-1.21.1.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/sodiumoptionsmodcompat-neoforge-1.0.0-1.21.1.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/sodiumoptionsmodcompat-neoforge-1.0.0-1.21.1.jar"
     },
     {
         "filename":  "sophisticatedbackpacks-1.21.1-3.24.15.1264.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/sophisticatedbackpacks-1.21.1-3.24.15.1264.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/sophisticatedbackpacks-1.21.1-3.24.15.1264.jar"
     },
     {
         "filename":  "sophisticatedcore-1.21.1-1.3.52.1020.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/sophisticatedcore-1.21.1-1.3.52.1020.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/sophisticatedcore-1.21.1-1.3.52.1020.jar"
     },
     {
         "filename":  "superflatworldnoslimes-1.21.1-3.4.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/superflatworldnoslimes-1.21.1-3.4.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/superflatworldnoslimes-1.21.1-3.4.jar"
     },
     {
         "filename":  "tb-library-neoforge-2101.1.14.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/tb-library-neoforge-2101.1.14.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/tb-library-neoforge-2101.1.14.jar"
     },
     {
         "filename":  "tims-ultimately-comprehensive-cobblemon-edits-of-destiny-1.6.1-1.1.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/tims-ultimately-comprehensive-cobblemon-edits-of-destiny-1.6.1-1.1.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/tims-ultimately-comprehensive-cobblemon-edits-of-destiny-1.6.1-1.1.jar"
     },
     {
         "filename":  "tnilib-neoforge-1.0.21-1.21.1.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/tnilib-neoforge-1.0.21-1.21.1.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/tnilib-neoforge-1.0.21-1.21.1.jar"
     },
     {
         "filename":  "Unilib-1.0.5+1.21.1-neoforge.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/Unilib-1.0.5+1.21.1-neoforge.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/Unilib-1.0.5+1.21.1-neoforge.jar"
     },
     {
         "filename":  "visuality-forge-2.0.5.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/visuality-forge-2.0.5.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/visuality-forge-2.0.5.jar"
     },
     {
         "filename":  "waystones-neoforge-1.21.1-21.1.19.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/waystones-neoforge-1.21.1-21.1.19.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/waystones-neoforge-1.21.1-21.1.19.jar"
     },
     {
         "filename":  "XaerosWorldMap_1.39.9_NeoForge_1.21.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/XaerosWorldMap_1.39.9_NeoForge_1.21.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/XaerosWorldMap_1.39.9_NeoForge_1.21.jar"
     },
     {
         "filename":  "Xaeros_Minimap_25.2.6_NeoForge_1.21.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/simongmine/main/mods/Xaeros_Minimap_25.2.6_NeoForge_1.21.jar"
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/Xaeros_Minimap_25.2.6_NeoForge_1.21.jar"
     }
 ]

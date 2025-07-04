@@ -1,4 +1,4 @@
-$baseUrl = "https://raw.githubusercontent.com/simong977/simongmine/main/mods"
+$baseUrl = "https://raw.githubusercontent.com/simong977/SimongMS/main/mods"
 $modsPath = Join-Path $PSScriptRoot "mods"
 $modFiles = Get-ChildItem -Path $modsPath -Filter *.jar
 $entries = @()
