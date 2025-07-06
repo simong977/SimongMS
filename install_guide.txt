@@ -3,9 +3,7 @@
 1. 마인크래프트는 기본적으로 jdk가 필요합니다. 
              (이 버전의 경우 jdk21)
 링크 : 
-https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html
-
-jdk-21_windows-x64_bin 파일 다운로드
+https://download.oracle.com/java/21/archive/jdk-21.0.6_windows-x64_bin.msi (sha256)
 
 다운로드 후 혹시 jdk17이나 다른버전이 있는지 확인하세요 
 (프로그램 추가 제거에서 확인)
