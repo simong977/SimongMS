@@ -1,17 +1,31 @@
-$baseUrl = "https://raw.githubusercontent.com/simong977/SimongMS/main/mods"
-$modsPath = Join-Path $PSScriptRoot "mods"
-$modFiles = Get-ChildItem -Path $modsPath -Filter *.jar
-$entries = @()
+$tag = "v1.0.0"
+$repo = "simong977/SimongMS"
+$output = @()
 
-foreach ($file in $modFiles) {
-    $encodedFileName = [System.Uri]::EscapeDataString($file.Name)
-
-    $entry = @{
-        filename = $file.Name                  # ½ÇÁ¦ ÆÄÀÏ¸í (°ø¹é Æ÷ÇÔ)
-        url      = "$baseUrl/$encodedFileName" # °ø¹é ¡æ %20 µî ÀÎÄÚµù
-    }
-    $entries += $entry
+# âœ… ì˜ˆì™¸ íŒŒì¼ì€ ì ˆëŒ€ URLë¡œ í•˜ë“œì½”ë”© (ë³€ìˆ˜ ì“°ì§€ ì•ŠìŒ)
+$output += [PSCustomObject]@{
+    filename = "cobblemon-spawn-notification-1.6-neoforge-1.3.7.jar"
+    url      = "https://github.com/simong977/SimongMS/releases/download/v1.0.0/cobblemon-spawn-notification-1.6-neoforge-1.3.7.jar"
 }
 
-# °á°ú´Â ÇöÀç Æú´õ¿¡ ÀúÀå (modlist.json)
-$entries | ConvertTo-Json -Depth 2 | Out-File "$PSScriptRoot\modlist.json" -Encoding UTF8
+# mods í´ë”ì˜ .jar íŒŒì¼ë“¤ ê°€ì ¸ì˜¤ê¸°
+$mods = Get-ChildItem -Path ".\mods" -Filter "*.jar"
+
+foreach ($mod in $mods) {
+    $filename = $mod.Name
+
+    # ì˜ˆì™¸ íŒŒì¼ì€ ì´ë¯¸ ì¶”ê°€ëìœ¼ë¯€ë¡œ ì œì™¸
+    if ($filename -eq "cobblemon-spawn-notification-1.6-neoforge-1.3.7.jar") {
+        continue
+    }
+
+    $url = "https://github.com/$repo/releases/download/$tag/$filename"
+
+    $output += [PSCustomObject]@{
+        filename = $filename
+        url      = $url
+    }
+}
+
+# JSONìœ¼ë¡œ ì €ì¥
+$output | ConvertTo-Json -Depth 3 | Out-File -Encoding UTF8 "modlist.json"
