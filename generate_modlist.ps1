@@ -1,32 +1,17 @@
-$tag = "v1.0.0"
-$repo = "simong977/SimongMS"
-$output = @()
+$baseUrl = "https://raw.githubusercontent.com/simong977/SimongMS/main/mods"
+$modsPath = Join-Path $PSScriptRoot "mods"
+$modFiles = Get-ChildItem -Path $modsPath -Filter *.jar
+$entries = @()
 
-# âœ… 1. ì˜ˆì™¸ íŒŒì¼: ë¦´ë¦¬ì¦ˆ ë§í¬ (ì¸ì½”ë”© ì²˜ë¦¬ í•„ìš”)
-$output += [PSCustomObject]@{
-    filename = "Cobblemon-neoforge-1.6.1+1.21.1.jar"
-    url      = "https://github.com/$repo/releases/download/$tag/Cobblemon-neoforge-1.6.1%2B1.21.1.jar"
+foreach ($file in $modFiles) {
+    $encodedFileName = [System.Uri]::EscapeDataString($file.Name)
+
+    $entry = @{
+        filename = $file.Name                  # ½ÇÁ¦ ÆÄÀÏ¸í (°ø¹é Æ÷ÇÔ)
+        url      = "$baseUrl/$encodedFileName" # °ø¹é ¡æ %20 µî ÀÎÄÚµù
+    }
+    $entries += $entry
 }
 
-# âœ… 2. ë‚˜ë¨¸ì§€ mods í´ë”ì˜ íŒŒì¼ì€ raw.githubusercontent ë§í¬ ì‚¬ìš©
-$mods = Get-ChildItem -Path ".\mods" -Filter "*.jar"
-
-foreach ($mod in $mods) {
-    $filename = $mod.Name
-
-    # ì˜ˆì™¸ íŒŒì¼ì€ ì œì™¸
-    if ($filename -eq "Cobblemon-neoforge-1.6.1+1.21.1.jar") {
-        continue
-    }
-
-    # raw.githubusercontent.com ê²½ë¡œ ìƒì„±
-    $url = "https://raw.githubusercontent.com/$repo/main/mods/$filename"
-
-    $output += [PSCustomObject]@{
-        filename = $filename
-        url      = $url
-    }
-}
-
-# âœ… 3. JSON ì €ì¥
-$output | ConvertTo-Json -Depth 3 | Out-File -Encoding UTF8 "modlist.json"
+# °á°ú´Â ÇöÀç Æú´õ¿¡ ÀúÀå (modlist.json)
+$entries | ConvertTo-Json -Depth 2 | Out-File "$PSScriptRoot\modlist.json" -Encoding UTF8
