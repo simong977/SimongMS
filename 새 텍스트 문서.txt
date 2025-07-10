@@ -1,0 +1,5 @@
+[
+    {
+        "filename": "Cobblemon-neoforge-1.6.1+1.21.1.jar",
+        "url": "https://github.com/simong977/SimongMS/releases/download/v1.0.0/Cobblemon-neoforge-1.6.1%2B1.21.1.jar"
+    },
