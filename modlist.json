@@ -1,8 +1,9 @@
 ﻿[
-  {
+        {
         "filename": "Cobblemon-neoforge-1.6.1+1.21.1.jar",
         "url": "https://github.com/simong977/SimongMS/releases/download/v1.0.0/Cobblemon-neoforge-1.6.1%2B1.21.1.jar"
     },
+
     {
         "filename":  "Adorn-6.0.3+1.21.1-neoforge.jar",
         "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/Adorn-6.0.3%2B1.21.1-neoforge.jar"
@@ -198,6 +199,10 @@
     {
         "filename":  "kotlinforforge-5.9.0-all.jar",
         "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/kotlinforforge-5.9.0-all.jar"
+    },
+    {
+        "filename":  "kubejs-neoforge-2101.7.1-build.181.jar",
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/kubejs-neoforge-2101.7.1-build.181.jar"
     },
     {
         "filename":  "lambdynamiclights-3.1.4-neo-0+1.21.jar",
