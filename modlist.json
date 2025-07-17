@@ -1,9 +1,9 @@
-﻿[
-        {
+﻿[ 
+
+       {
         "filename": "Cobblemon-neoforge-1.6.1+1.21.1.jar",
         "url": "https://github.com/simong977/SimongMS/releases/download/v1.0.0/Cobblemon-neoforge-1.6.1%2B1.21.1.jar"
     },
-
     {
         "filename":  "Adorn-6.0.3+1.21.1-neoforge.jar",
         "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/Adorn-6.0.3%2B1.21.1-neoforge.jar"
@@ -89,8 +89,8 @@
         "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/CobblemonMoveInspector-neoforge-1.2.0.jar"
     },
     {
-        "filename":  "Cobblemon_MegaShowdown-10.0.1-release-neoforge.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/Cobblemon_MegaShowdown-10.0.1-release-neoforge.jar"
+        "filename":  "Cobblemon_MegaShowdown-9.8.0-beta-neoforge.jar",
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/Cobblemon_MegaShowdown-9.8.0-beta-neoforge.jar"
     },
     {
         "filename":  "cobblenav-neoforge-2.2.3.jar",
