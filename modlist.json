@@ -3,6 +3,7 @@
         "filename": "Cobblemon-neoforge-1.6.1+1.21.1.jar",
         "url": "https://github.com/simong977/SimongMS/releases/download/v1.0.0/Cobblemon-neoforge-1.6.1%2B1.21.1.jar"
     },
+
     {
         "filename":  "Adorn-6.0.3+1.21.1-neoforge.jar",
         "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/Adorn-6.0.3%2B1.21.1-neoforge.jar"
@@ -168,8 +169,8 @@
         "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/ftb-library-neoforge-2101.1.16.jar"
     },
     {
-        "filename":  "highlight-neoforge-1.21.5-3.5.0.jar",
-        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/highlight-neoforge-1.21.5-3.5.0.jar"
+        "filename":  "Highlighter-1.21-neoforge-1.1.11.jar",
+        "url":  "https://raw.githubusercontent.com/simong977/SimongMS/main/mods/Highlighter-1.21-neoforge-1.1.11.jar"
     },
     {
         "filename":  "Iceberg-1.21.1-neoforge-1.3.2.jar",
