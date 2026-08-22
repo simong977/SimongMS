@@ -111,6 +111,17 @@ body {
   color: var(--cream);
 }
 
+.watch-note {
+  font-size: 12px;
+  text-align: center;
+  margin: 0;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(205, 165, 69, 0.14);
+  border: 1px solid var(--gold-dim);
+  color: var(--gold);
+}
+
 .controls {
   display: flex;
   gap: 12px;
