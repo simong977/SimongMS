@@ -16,6 +16,7 @@
   var qrBox = document.getElementById('qrBox');
   var qrUrl = document.getElementById('qrUrl');
   var qrCopyBtn = document.getElementById('qrCopyBtn');
+  var qrCloseBtn = document.getElementById('qrCloseBtn');
 
   function buildDeck() {
     var cards = [];
@@ -114,7 +115,17 @@
         if (qrUrl) qrUrl.textContent = window.location.href;
         qrDrawn = true;
       }
-      qrPanel.hidden = !qrPanel.hidden;
+      qrPanel.hidden = false;
+    });
+    // Tapping the dimmed backdrop (not the panel itself) closes it too.
+    qrPanel.addEventListener('click', function (e) {
+      if (e.target === qrPanel) qrPanel.hidden = true;
+    });
+  }
+
+  if (qrCloseBtn) {
+    qrCloseBtn.addEventListener('click', function () {
+      qrPanel.hidden = true;
     });
   }
 

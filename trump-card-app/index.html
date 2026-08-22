@@ -34,18 +34,24 @@
     </div>
     <span id="deckState" hidden data-deck="" data-position="-1"></span>
     <p class="hint" id="hint">다음 카드를 눌러서 시작해요.</p>
-    <button id="qrBtn" class="watch-note qr-btn" type="button">QR코드로 링크 공유</button>
-    <div id="qrPanel" class="qr-panel" hidden>
-      <div class="qr-box" id="qrBox"></div>
-      <p class="qr-url" id="qrUrl"></p>
-      <button id="qrCopyBtn" class="btn btn-secondary" type="button">링크 복사</button>
-    </div>
+    <button id="qrBtn" class="qr-btn" type="button">QR코드로 링크 공유</button>
   </main>
 
   <footer class="controls">
     <button id="resetBtn" class="btn btn-secondary" type="button">다시 섞기</button>
     <button id="nextBtn" class="btn btn-primary" type="button">시작하기</button>
   </footer>
+</div>
+
+<div id="qrPanel" class="qr-overlay" hidden>
+  <div class="qr-panel">
+    <div class="qr-box" id="qrBox"></div>
+    <p class="qr-url" id="qrUrl"></p>
+    <div class="qr-panel-actions">
+      <button id="qrCopyBtn" class="btn btn-secondary" type="button">링크 복사</button>
+      <button id="qrCloseBtn" class="btn btn-secondary" type="button">닫기</button>
+    </div>
+  </div>
 </div>
 
 <script src="qrcode.lib.js"></script>
