@@ -1,0 +1,19 @@
+{
+  "name": "트럼프 카드",
+  "short_name": "트럼프카드",
+  "description": "다음 버튼을 눌러 트럼프 카드를 한 장씩 확인하는 앱",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b5c3d",
+  "theme_color": "#0b6b4a",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

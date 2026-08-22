@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>트럼프 카드</title>
+<meta name="theme-color" content="#0b6b4a">
+<meta name="description" content="다음 버튼을 눌러 트럼프 카드를 한 장씩 확인하는 앱">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <h1>트럼프 카드</h1>
+    <div class="counter" id="counter">1 / 52</div>
+  </header>
+
+  <main class="stage">
+    <div class="card-slot">
+      <div class="playing-card" id="card" aria-live="polite">
+        <div class="corner corner-top">
+          <span class="rank"></span>
+          <span class="suit"></span>
+        </div>
+        <div class="pips"></div>
+        <div class="corner corner-bottom">
+          <span class="rank"></span>
+          <span class="suit"></span>
+        </div>
+      </div>
+    </div>
+    <p class="hint" id="hint"></p>
+  </main>
+
+  <footer class="controls">
+    <button id="resetBtn" class="btn btn-secondary" type="button">다시 섞기</button>
+    <button id="nextBtn" class="btn btn-primary" type="button">다음 카드</button>
+  </footer>
+</div>
+
+<script src="app.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
