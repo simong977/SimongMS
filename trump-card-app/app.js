@@ -12,6 +12,11 @@
   var resetBtn = document.getElementById('resetBtn');
   var deckState = document.getElementById('deckState');
   var watchNote = document.getElementById('watchNote');
+  var qrBtn = document.getElementById('qrBtn');
+  var qrPanel = document.getElementById('qrPanel');
+  var qrBox = document.getElementById('qrBox');
+  var qrUrl = document.getElementById('qrUrl');
+  var qrCopyBtn = document.getElementById('qrCopyBtn');
 
   var readOnly = false;
 
@@ -128,6 +133,40 @@
     renderFromState(true);
   });
 
+  // Share-link QR code, drawn entirely on-device with the vendored
+  // qrcode-generator (see qrcode.lib.js / NOTICE.md) — no network call.
+  if (qrBtn && qrPanel && qrBox && typeof qrcode === 'function') {
+    var qrDrawn = false;
+    qrBtn.addEventListener('click', function () {
+      if (!qrDrawn) {
+        var qr = qrcode(0, 'M');
+        qr.addData(window.location.href);
+        qr.make();
+        qrBox.innerHTML = qr.createSvgTag({ cellSize: 5, margin: 4, scalable: true });
+        if (qrUrl) qrUrl.textContent = window.location.href;
+        qrDrawn = true;
+      }
+      qrPanel.hidden = !qrPanel.hidden;
+    });
+  }
+
+  if (qrCopyBtn) {
+    qrCopyBtn.addEventListener('click', function () {
+      var url = window.location.href;
+      var done = function () {
+        qrCopyBtn.textContent = '복사됐어요';
+        window.setTimeout(function () {
+          qrCopyBtn.textContent = '링크 복사';
+        }, 1500);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(done, done);
+      } else {
+        done();
+      }
+    });
+  }
+
   // Multiplayer: on the published Artifact, viewers watching this same
   // link see the card change live as whoever controls it clicks "다음
   // 카드". Everywhere else (the downloaded file, GitHub Pages) this is
@@ -136,9 +175,12 @@
     try {
       if (!window.claude || typeof window.claude.use !== 'function') return;
       window.claude.use('artifact').then(function (artifact) {
-        if (!artifact || !watchNote) return;
-        watchNote.textContent = '이 링크를 열어둔 친구들과 카드를 실시간으로 같이 볼 수 있어요.';
-        watchNote.hidden = false;
+        if (!artifact) return;
+        if (watchNote) {
+          watchNote.textContent = '이 링크를 열어둔 친구들과 카드를 실시간으로 같이 볼 수 있어요.';
+          watchNote.hidden = false;
+        }
+        if (qrBtn) qrBtn.hidden = false;
       });
     } catch (e) {
       /* no multiplayer runtime available */

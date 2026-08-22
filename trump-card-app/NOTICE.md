@@ -9,4 +9,10 @@ Hendrik te Bekke:
 - Original: https://web.archive.org/web/2015/http://svg-cards.sourceforge.net/
 - License: GNU Lesser General Public License v2.1 (LGPL-2.1)
 
+`qrcode.lib.js` is **qrcode-generator** by Kazuhiko Arase, used to draw
+the share-link QR code entirely on-device (no network calls):
+
+- https://github.com/kazuhikoarase/qrcode-generator
+- License: MIT
+
 Everything else in this app is original.

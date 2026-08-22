@@ -35,6 +35,12 @@
     <span id="deckState" hidden data-deck="" data-position="-1"></span>
     <p class="hint" id="hint">다음 카드를 눌러서 시작해요.</p>
     <p class="watch-note" id="watchNote" hidden></p>
+    <button id="qrBtn" class="watch-note qr-btn" type="button" hidden>QR코드로 링크 공유</button>
+    <div id="qrPanel" class="qr-panel" hidden>
+      <div class="qr-box" id="qrBox"></div>
+      <p class="qr-url" id="qrUrl"></p>
+      <button id="qrCopyBtn" class="btn btn-secondary" type="button">링크 복사</button>
+    </div>
   </main>
 
   <footer class="controls">
@@ -43,6 +49,7 @@
   </footer>
 </div>
 
+<script src="qrcode.lib.js"></script>
 <script src="app.js"></script>
 <script>
 if ('serviceWorker' in navigator) {
