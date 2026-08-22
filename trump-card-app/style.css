@@ -192,49 +192,39 @@ body {
 }
 
 .face-box {
-  width: 74%;
-  height: 80%;
+  width: 78%;
+  height: 84%;
   border: 1.5px solid currentColor;
   border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
   position: relative;
+  overflow: hidden;
 }
 
-.face-box::before,
-.face-box::after {
-  content: "";
+/* Court-card illustration: a single bust (see index.html <symbol> defs)
+   mirrored top/bottom, the same point-symmetric construction real face
+   cards use, so the card reads correctly either way up. */
+.court-figure {
   position: absolute;
-  left: 8px;
-  right: 8px;
-  height: 1px;
-  background: currentColor;
-  opacity: 0.35;
-}
-.face-box::before { top: 8px; }
-.face-box::after { bottom: 8px; }
-
-.face-letter {
-  font-family: "Fraunces", serif;
-  font-size: clamp(42px, 13vw, 58px);
-  font-weight: 700;
-  line-height: 1;
-  font-variation-settings: "opsz" 90;
+  inset: 6%;
+  width: 88%;
+  height: 88%;
+  fill: currentColor;
 }
 
-.face-label {
+.face-caption {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--card-bg);
+  padding: 2px 9px;
+  border-radius: 999px;
   font-family: "Noto Serif KR", serif;
-  font-size: 12px;
-  letter-spacing: 0.22em;
-  opacity: 0.7;
-}
-
-.face-suit-icon {
-  width: clamp(23px, 6.6vw, 31px);
-  height: clamp(23px, 6.6vw, 31px);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  box-shadow: 0 0 0 1px currentColor inset;
 }
 
 .hint {
