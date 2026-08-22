@@ -1,9 +1,10 @@
-var CACHE_NAME = 'trump-card-app-v1';
+var CACHE_NAME = 'trump-card-app-v2';
 var ASSETS = [
   './',
   './index.html',
   './style.css',
   './app.js',
+  './qrcode.lib.js',
   './manifest.json',
   './icon.svg'
 ];

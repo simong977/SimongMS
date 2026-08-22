@@ -219,13 +219,6 @@ body {
   justify-content: center;
 }
 
-.participants-empty {
-  margin: 6px 0 0;
-  font-size: 12px;
-  opacity: 0.6;
-  text-align: center;
-}
-
 .join-note {
   flex: 0 0 auto;
   min-height: 14px;
