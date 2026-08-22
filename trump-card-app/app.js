@@ -8,7 +8,21 @@
     { key: 'club', color: 'black' }
   ];
   var RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
-  var FACE_LABEL = { J: '잭', Q: '퀸', K: '킹' };
+
+  // Which court portrait (from the embedded <symbol id="portrait-*">
+  // defs, traced from David Bellot's SVG-cards, LGPL-2.1) each suit's
+  // king/queen/jack uses, and that portrait's natural size.
+  var COURT_PORTRAIT = {
+    spade: { K: 'king_1', Q: 'queen_2', J: 'jack_3' },
+    heart: { K: 'king_2', Q: 'queen_1', J: 'jack_2' },
+    club: { K: 'king_3', Q: 'queen_3', J: 'jack_4' },
+    diamond: { K: 'king_4', Q: 'queen_4', J: 'jack_1' }
+  };
+  var PORTRAIT_SIZE = {
+    king_1: [119.7, 198.6], king_2: [117.0, 183.5], king_3: [117.4, 185.1], king_4: [120.9, 188.6],
+    queen_1: [119.1, 192.0], queen_2: [123.8, 181.3], queen_3: [119.7, 188.0], queen_4: [127.5, 180.0],
+    jack_1: [114.3, 175.4], jack_2: [116.9, 180.6], jack_3: [113.6, 175.4], jack_4: [117.3, 193.5]
+  };
 
   // Pip positions on a 5-row x 3-col (left/center/right) grid, per numeric rank.
   var PIP_LAYOUTS = {
@@ -43,6 +57,36 @@
     var use = document.createElementNS(SVG_NS, 'use');
     use.setAttribute('href', '#icon-' + suitKey);
     svg.appendChild(use);
+    return svg;
+  }
+
+  function courtPortrait(suitKey, rank) {
+    var id = COURT_PORTRAIT[suitKey][rank];
+    var size = PORTRAIT_SIZE[id];
+    var w = size[0], h = size[1];
+
+    var svg = document.createElementNS(SVG_NS, 'svg');
+    svg.setAttribute('class', 'court-portrait');
+    svg.setAttribute('viewBox', '0 0 ' + w + ' ' + (2 * h));
+    svg.setAttribute('aria-hidden', 'true');
+
+    var useTop = document.createElementNS(SVG_NS, 'use');
+    useTop.setAttribute('href', '#portrait-' + id);
+    useTop.setAttribute('x', '0');
+    useTop.setAttribute('y', '0');
+    useTop.setAttribute('width', String(w));
+    useTop.setAttribute('height', String(h));
+
+    var useBottom = document.createElementNS(SVG_NS, 'use');
+    useBottom.setAttribute('href', '#portrait-' + id);
+    useBottom.setAttribute('x', '0');
+    useBottom.setAttribute('y', '0');
+    useBottom.setAttribute('width', String(w));
+    useBottom.setAttribute('height', String(h));
+    useBottom.setAttribute('transform', 'rotate(180 ' + (w / 2) + ' ' + h + ')');
+
+    svg.appendChild(useTop);
+    svg.appendChild(useBottom);
     return svg;
   }
 
@@ -89,23 +133,7 @@
       container.classList.add('pips-face');
       var box = document.createElement('div');
       box.className = 'face-box';
-
-      var frame = document.createElement('div');
-      frame.className = 'face-frame';
-      box.appendChild(frame);
-
-      box.appendChild(suitIcon(suit.key, 'face-suit-icon'));
-
-      var letter = document.createElement('span');
-      letter.className = 'face-letter';
-      letter.textContent = rank;
-      box.appendChild(letter);
-
-      var label = document.createElement('span');
-      label.className = 'face-label';
-      label.textContent = FACE_LABEL[rank];
-      box.appendChild(label);
-
+      box.appendChild(courtPortrait(suit.key, rank));
       container.appendChild(box);
       return;
     }
