@@ -5,10 +5,6 @@
 :root {
   --felt-hi: #1c6b45;
   --felt-lo: #05301f;
-  --card-bg: #faf6ec;
-  --card-border: #d9cfb3;
-  --ink: #1c1a17;
-  --red: #ad1230;
   --gold: #cda545;
   --gold-dim: rgba(205, 165, 69, 0.55);
   --cream: #f3ead2;
@@ -81,21 +77,16 @@ body {
   aspect-ratio: 5 / 7;
 }
 
+/* The card art (base + corner index + illustration, all in one) comes
+   from the embedded <symbol> defs — see NOTICE.md. */
 .playing-card {
-  position: relative;
   width: 100%;
   height: 100%;
-  background: var(--card-bg);
   border-radius: 16px;
-  border: 1px solid var(--card-border);
   box-shadow:
-    0 2px 0 rgba(255, 255, 255, 0.5) inset,
+    0 2px 0 rgba(255, 255, 255, 0.5),
     0 22px 44px var(--shadow);
-  color: var(--ink);
 }
-
-.playing-card[data-color="red"] { color: var(--red); }
-.playing-card[data-color="black"] { color: var(--ink); }
 
 .playing-card.flash {
   animation: cardIn 320ms cubic-bezier(.2, .7, .3, 1);
@@ -109,102 +100,6 @@ body {
   from { transform: scale(0.9) translateY(14px) rotate(-1.5deg); opacity: 0; }
   60% { opacity: 1; }
   to { transform: scale(1) translateY(0) rotate(0); opacity: 1; }
-}
-
-.corner {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  line-height: 1;
-  width: 34px;
-  font-family: "Fraunces", "Noto Serif KR", serif;
-}
-
-.corner .rank {
-  font-size: 23px;
-  font-weight: 700;
-  font-variation-settings: "opsz" 14;
-}
-
-.corner-top { top: 14px; left: 13px; }
-.corner-bottom { bottom: 14px; right: 13px; transform: rotate(180deg); }
-
-.pips {
-  position: absolute;
-  inset: 0;
-}
-
-/* Suit pips/index marks render as solid SVG icons (see index.html <symbol> defs)
-   rather than font glyphs, so every device shows the same crisp shape. */
-.suit-icon,
-.suit-icon * {
-  fill: currentColor;
-}
-
-.suit-icon {
-  display: block;
-}
-
-.corner-suit-icon {
-  width: 15px;
-  height: 15px;
-  margin-top: 4px;
-}
-
-.pip {
-  position: absolute;
-  width: clamp(19px, 5.8vw, 28px);
-  height: clamp(19px, 5.8vw, 28px);
-  transform: translate(-50%, -50%);
-}
-
-.pip-flip {
-  transform: translate(-50%, -50%) rotate(180deg);
-}
-
-.pip-col-l { left: 27%; }
-.pip-col-c { left: 50%; }
-.pip-col-r { left: 73%; }
-
-.pip-row-1 { top: 21%; }
-.pip-row-2 { top: 37%; }
-.pip-row-3 { top: 50%; }
-.pip-row-4 { top: 63%; }
-.pip-row-5 { top: 79%; }
-
-.pips-ace {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.suit-icon-big {
-  width: clamp(58px, 17vw, 84px);
-  height: clamp(58px, 17vw, 84px);
-  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.06));
-}
-
-.pips-face {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.face-box {
-  width: 78%;
-  height: 88%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Court portraits are traced from David Bellot's SVG-cards (LGPL-2.1),
-   see NOTICE.md. Each is drawn once and mirrored 180deg to fill the
-   card, the same construction the original card art uses. */
-.court-portrait {
-  height: 100%;
-  width: 100%;
 }
 
 .hint {
