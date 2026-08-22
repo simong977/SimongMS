@@ -9,7 +9,6 @@
   ];
   var RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
   var FACE_LABEL = { J: '잭', Q: '퀸', K: '킹' };
-  var COURT_ID = { J: 'jack', Q: 'queen', K: 'king' };
 
   // Pip positions on a 5-row x 3-col (left/center/right) grid, per numeric rank.
   var PIP_LAYOUTS = {
@@ -91,28 +90,21 @@
       var box = document.createElement('div');
       box.className = 'face-box';
 
-      var svg = document.createElementNS(SVG_NS, 'svg');
-      svg.setAttribute('class', 'court-figure');
-      svg.setAttribute('viewBox', '0 0 100 140');
-      svg.setAttribute('aria-hidden', 'true');
-      var courtRef = '#court-' + COURT_ID[rank];
-      var useTop = document.createElementNS(SVG_NS, 'use');
-      useTop.setAttribute('href', courtRef);
-      useTop.setAttribute('width', '100');
-      useTop.setAttribute('height', '70');
-      var useBottom = document.createElementNS(SVG_NS, 'use');
-      useBottom.setAttribute('href', courtRef);
-      useBottom.setAttribute('width', '100');
-      useBottom.setAttribute('height', '70');
-      useBottom.setAttribute('transform', 'rotate(180 50 70)');
-      svg.appendChild(useTop);
-      svg.appendChild(useBottom);
-      box.appendChild(svg);
+      var frame = document.createElement('div');
+      frame.className = 'face-frame';
+      box.appendChild(frame);
 
-      var caption = document.createElement('div');
-      caption.className = 'face-caption';
-      caption.textContent = rank + ' · ' + FACE_LABEL[rank];
-      box.appendChild(caption);
+      box.appendChild(suitIcon(suit.key, 'face-suit-icon'));
+
+      var letter = document.createElement('span');
+      letter.className = 'face-letter';
+      letter.textContent = rank;
+      box.appendChild(letter);
+
+      var label = document.createElement('span');
+      label.className = 'face-label';
+      label.textContent = FACE_LABEL[rank];
+      box.appendChild(label);
 
       container.appendChild(box);
       return;
