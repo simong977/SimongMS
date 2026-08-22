@@ -26,33 +26,45 @@
     <div class="counter" id="counter">대기 중</div>
   </header>
 
-  <main class="stage">
-    <div class="card-slot">
-      <svg id="card" class="playing-card" viewBox="0 0 169.075 244.640" aria-live="polite">
-        <use id="cardUse" href="#heart_king"/>
-      </svg>
-    </div>
-    <span id="deckState" hidden data-deck="" data-position="-1"></span>
-    <p class="hint" id="hint">다음 카드를 눌러서 시작해요.</p>
-    <button id="qrBtn" class="qr-btn" type="button">QR코드로 링크 공유</button>
-  </main>
+  <section id="idleView" class="view">
+    <p class="idle-copy">방을 만들면 친구들이 QR로 들어와서 같이 볼 수 있어요.</p>
+    <button id="startRoomBtn" class="btn btn-primary" type="button">게임 시작</button>
+  </section>
 
-  <footer class="controls">
-    <button id="resetBtn" class="btn btn-secondary" type="button">다시 섞기</button>
-    <button id="nextBtn" class="btn btn-primary" type="button">시작하기</button>
-  </footer>
-</div>
-
-<div id="qrPanel" class="qr-overlay" hidden>
-  <div class="qr-panel">
+  <section id="lobbyView" class="view" hidden>
     <div class="qr-box" id="qrBox"></div>
     <p class="qr-url" id="qrUrl"></p>
-    <div class="qr-panel-actions">
-      <button id="qrCopyBtn" class="btn btn-secondary" type="button">링크 복사</button>
-      <button id="qrCloseBtn" class="btn btn-secondary" type="button">닫기</button>
+    <button id="qrCopyBtn" class="qr-copy-btn" type="button">링크 복사</button>
+    <div class="participants">
+      <p class="participants-count" id="participantsCount">참가 인원: 0명</p>
+      <ol class="participants-list" id="participantsList"></ol>
     </div>
-  </div>
+    <p class="join-note" id="joinNote"></p>
+    <div class="lobby-actions">
+      <button id="joinBtn" class="btn btn-secondary" type="button">참가하기</button>
+      <button id="launchBtn" class="btn btn-primary" type="button">시작</button>
+    </div>
+  </section>
+
+  <section id="playView" class="view" hidden>
+    <main class="stage">
+      <div class="card-slot">
+        <svg id="card" class="playing-card" viewBox="0 0 169.075 244.640" aria-live="polite">
+          <use id="cardUse" href="#heart_king"/>
+        </svg>
+      </div>
+      <span id="deckState" hidden data-deck="" data-position="-1"></span>
+      <p class="hint" id="hint"></p>
+    </main>
+
+    <footer class="controls">
+      <button id="resetBtn" class="btn btn-secondary" type="button">다시 섞기</button>
+      <button id="nextBtn" class="btn btn-primary" type="button">다음 카드</button>
+    </footer>
+  </section>
 </div>
+
+<span id="roomState" hidden data-phase="idle"></span>
 
 <script src="qrcode.lib.js"></script>
 <script src="app.js"></script>

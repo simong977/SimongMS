@@ -3,6 +3,21 @@
 
   var SUITS = ['spade', 'heart', 'diamond', 'club'];
   var RANKS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'jack', 'queen', 'king'];
+  var JOIN_KEY = 'tc_joined_number';
+
+  var idleView = document.getElementById('idleView');
+  var lobbyView = document.getElementById('lobbyView');
+  var playView = document.getElementById('playView');
+  var startRoomBtn = document.getElementById('startRoomBtn');
+
+  var qrBox = document.getElementById('qrBox');
+  var qrUrl = document.getElementById('qrUrl');
+  var qrCopyBtn = document.getElementById('qrCopyBtn');
+  var participantsCountEl = document.getElementById('participantsCount');
+  var participantsListEl = document.getElementById('participantsList');
+  var joinNoteEl = document.getElementById('joinNote');
+  var joinBtn = document.getElementById('joinBtn');
+  var launchBtn = document.getElementById('launchBtn');
 
   var cardEl = document.getElementById('card');
   var cardUse = document.getElementById('cardUse');
@@ -11,12 +26,130 @@
   var nextBtn = document.getElementById('nextBtn');
   var resetBtn = document.getElementById('resetBtn');
   var deckState = document.getElementById('deckState');
-  var qrBtn = document.getElementById('qrBtn');
-  var qrPanel = document.getElementById('qrPanel');
-  var qrBox = document.getElementById('qrBox');
-  var qrUrl = document.getElementById('qrUrl');
-  var qrCopyBtn = document.getElementById('qrCopyBtn');
-  var qrCloseBtn = document.getElementById('qrCloseBtn');
+  var roomState = document.getElementById('roomState');
+
+  var readOnly = false;
+  var qrDrawn = false;
+
+  // ---------- room phase (idle -> lobby -> playing), synced via
+  // roomState's data-phase attribute ----------
+
+  function currentPhase() {
+    return roomState.getAttribute('data-phase') || 'idle';
+  }
+
+  function applyPhase(phase) {
+    idleView.hidden = phase !== 'idle';
+    lobbyView.hidden = phase !== 'lobby';
+    playView.hidden = phase !== 'playing';
+
+    if (phase === 'lobby') {
+      counterEl.textContent = '대기 중';
+      ensureQrDrawn();
+      renderParticipants();
+      updateJoinUI();
+    } else if (phase === 'idle') {
+      counterEl.textContent = '대기 중';
+    }
+  }
+
+  function setPhase(phase) {
+    roomState.setAttribute('data-phase', phase);
+    applyPhase(phase);
+  }
+
+  startRoomBtn.addEventListener('click', function () {
+    setPhase('lobby');
+  });
+
+  launchBtn.addEventListener('click', function () {
+    setPhase('playing');
+    startNewGame();
+  });
+
+  // ---------- lobby: QR share + participant roll call ----------
+
+  function ensureQrDrawn() {
+    if (qrDrawn || typeof qrcode !== 'function') return;
+    var qr = qrcode(0, 'M');
+    qr.addData(window.location.href);
+    qr.make();
+    qrBox.innerHTML = qr.createSvgTag({ cellSize: 5, margin: 4, scalable: true });
+    qrUrl.textContent = window.location.href;
+    qrDrawn = true;
+  }
+
+  if (qrCopyBtn) {
+    qrCopyBtn.addEventListener('click', function () {
+      var url = window.location.href;
+      var done = function () {
+        qrCopyBtn.textContent = '복사됐어요';
+        window.setTimeout(function () {
+          qrCopyBtn.textContent = '링크 복사';
+        }, 1500);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(done, done);
+      } else {
+        done();
+      }
+    });
+  }
+
+  function renderParticipants() {
+    var count = participantsListEl.children.length;
+    participantsCountEl.textContent = '참가 인원: ' + count + '명';
+  }
+
+  function myJoinedNumber() {
+    try {
+      return sessionStorage.getItem(JOIN_KEY);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function markJoined(n) {
+    try {
+      sessionStorage.setItem(JOIN_KEY, String(n));
+    } catch (e) {
+      /* private mode etc. — join still shows in the shared list */
+    }
+  }
+
+  function updateJoinUI() {
+    var mine = myJoinedNumber();
+    if (mine) {
+      joinBtn.disabled = true;
+      joinBtn.textContent = '참가 완료';
+      joinNoteEl.textContent = '당신은 ' + mine + '번째 참가자예요.';
+    } else {
+      joinBtn.disabled = false;
+      joinBtn.textContent = '참가하기';
+      joinNoteEl.textContent = '';
+    }
+  }
+
+  joinBtn.addEventListener('click', function () {
+    if (myJoinedNumber()) return;
+    var n = participantsListEl.children.length + 1;
+    var li = document.createElement('li');
+    var badge = document.createElement('span');
+    badge.className = 'badge';
+    badge.textContent = String(n);
+    var label = document.createElement('span');
+    label.textContent = n + '번 참가자';
+    li.appendChild(badge);
+    li.appendChild(label);
+    participantsListEl.appendChild(li);
+    markJoined(n);
+    renderParticipants();
+    updateJoinUI();
+  });
+
+  // ---------- card game (unchanged logic; state lives on deckState's
+  // data-* attributes so whoever clicks reads the current state off the
+  // page rather than trusting local memory) ----------
 
   function buildDeck() {
     var cards = [];
@@ -95,54 +228,63 @@
   nextBtn.addEventListener('click', advance);
   resetBtn.addEventListener('click', startNewGame);
 
-  if (getState().position >= 0) {
+  // ---------- initial render from whatever is already on the page
+  // (a friend joining a room already in progress) ----------
+
+  applyPhase(currentPhase());
+  if (currentPhase() === 'playing' && getState().position >= 0) {
     renderFromState(false);
   }
 
-  // Share-link QR code, drawn entirely on-device with the vendored
-  // qrcode-generator (see qrcode.lib.js / NOTICE.md) — no network call.
-  // A friend who scans it or opens the link gets their own copy of the
-  // app (each person shuffles independently — this isn't a live shared
-  // game, just an easy way to hand someone the link).
-  if (qrBtn && qrPanel && qrBox && typeof qrcode === 'function') {
-    var qrDrawn = false;
-    qrBtn.addEventListener('click', function () {
-      if (!qrDrawn) {
-        var qr = qrcode(0, 'M');
-        qr.addData(window.location.href);
-        qr.make();
-        qrBox.innerHTML = qr.createSvgTag({ cellSize: 5, margin: 4, scalable: true });
-        if (qrUrl) qrUrl.textContent = window.location.href;
-        qrDrawn = true;
-      }
-      qrPanel.hidden = false;
-    });
-    // Tapping the dimmed backdrop (not the panel itself) closes it too.
-    qrPanel.addEventListener('click', function (e) {
-      if (e.target === qrPanel) qrPanel.hidden = true;
-    });
+  // No multiplayer runtime available (the downloaded file, GitHub
+  // Pages): skip the lobby, behave exactly like the old solo app —
+  // but only if no one has touched the room yet.
+  function fallBackToSoloPlay() {
+    if (currentPhase() !== 'idle') return;
+    playView.hidden = false;
+    idleView.hidden = true;
+    hintEl.textContent = '다음 카드를 눌러서 시작해요.';
   }
 
-  if (qrCloseBtn) {
-    qrCloseBtn.addEventListener('click', function () {
-      qrPanel.hidden = true;
-    });
+  (function initMultiplayer() {
+    try {
+      if (!window.claude || typeof window.claude.use !== 'function') {
+        fallBackToSoloPlay();
+        return;
+      }
+      window.claude.use('artifact').then(function (artifact) {
+        if (!artifact) fallBackToSoloPlay();
+      });
+    } catch (e) {
+      fallBackToSoloPlay();
+    }
+  })();
+
+  // ---------- reacting to other people's clicks ----------
+
+  function lockToReadOnly() {
+    if (readOnly) return;
+    readOnly = true;
+    nextBtn.disabled = true;
+    resetBtn.disabled = true;
+    startRoomBtn.disabled = true;
+    joinBtn.disabled = true;
+    launchBtn.disabled = true;
+    window.setTimeout(function () {
+      window.location.reload();
+    }, 600);
   }
 
-  if (qrCopyBtn) {
-    qrCopyBtn.addEventListener('click', function () {
-      var url = window.location.href;
-      var done = function () {
-        qrCopyBtn.textContent = '복사됐어요';
-        window.setTimeout(function () {
-          qrCopyBtn.textContent = '링크 복사';
-        }, 1500);
-      };
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(url).then(done, done);
-      } else {
-        done();
-      }
-    });
-  }
+  document.addEventListener('claude:sync-off', lockToReadOnly);
+
+  // Attribute-only changes (phase, deck position) are patched into the
+  // DOM for us and just need a re-render; a brand new element (someone
+  // else joining) instead re-runs this whole script from the top, which
+  // re-derives everything from the page's current state naturally.
+  document.addEventListener('claude:edit', function () {
+    applyPhase(currentPhase());
+    if (currentPhase() === 'playing') {
+      renderFromState(true);
+    }
+  });
 })();
