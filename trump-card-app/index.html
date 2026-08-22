@@ -4,14 +4,36 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <title>트럼프 카드</title>
-<meta name="theme-color" content="#0b6b4a">
+<meta name="theme-color" content="#0d3d27">
 <meta name="description" content="다음 버튼을 눌러 트럼프 카드를 한 장씩 확인하는 앱">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Noto+Serif+KR:wght@600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+  <defs>
+    <symbol id="icon-spade" viewBox="0 0 100 100">
+      <path d="M50 6 C50 6 92 40 92 62 C92 78 78 88 64 88 C58 88 53 85 50 80 C53 90 60 95 74 98 L26 98 C40 95 47 90 50 80 C47 85 42 88 36 88 C22 88 8 78 8 62 C8 40 50 6 50 6 Z"/>
+    </symbol>
+    <symbol id="icon-heart" viewBox="0 0 100 100">
+      <path d="M50 90 C50 90 8 62 8 32 C8 14 22 4 36 4 C44 4 50 10 50 20 C50 10 56 4 64 4 C78 4 92 14 92 32 C92 62 50 90 50 90 Z"/>
+    </symbol>
+    <symbol id="icon-diamond" viewBox="0 0 100 100">
+      <path d="M50 6 C63 22 88 44 92 50 C88 56 63 78 50 94 C37 78 12 56 8 50 C12 44 37 22 50 6 Z"/>
+    </symbol>
+    <symbol id="icon-club" viewBox="0 0 100 100">
+      <circle cx="50" cy="34" r="22"/>
+      <circle cx="30" cy="60" r="20"/>
+      <circle cx="70" cy="60" r="20"/>
+      <path d="M42 66 C42 78 38 90 30 98 L70 98 C62 90 58 78 58 66 Z"/>
+    </symbol>
+  </defs>
+</svg>
 <div id="app">
   <header class="topbar">
     <h1>트럼프 카드</h1>

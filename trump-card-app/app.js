@@ -2,10 +2,10 @@
   'use strict';
 
   var SUITS = [
-    { key: 'spade', symbol: '♠', color: 'black' },
-    { key: 'heart', symbol: '♥', color: 'red' },
-    { key: 'diamond', symbol: '♦', color: 'red' },
-    { key: 'club', symbol: '♣', color: 'black' }
+    { key: 'spade', color: 'black' },
+    { key: 'heart', color: 'red' },
+    { key: 'diamond', color: 'red' },
+    { key: 'club', color: 'black' }
   ];
   var RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
   var FACE_LABEL = { J: '잭', Q: '퀸', K: '킹' };
@@ -32,6 +32,19 @@
   var hintEl = document.getElementById('hint');
   var nextBtn = document.getElementById('nextBtn');
   var resetBtn = document.getElementById('resetBtn');
+
+  var SVG_NS = 'http://www.w3.org/2000/svg';
+
+  function suitIcon(suitKey, extraClass) {
+    var svg = document.createElementNS(SVG_NS, 'svg');
+    svg.setAttribute('class', extraClass ? 'suit-icon ' + extraClass : 'suit-icon');
+    svg.setAttribute('viewBox', '0 0 100 100');
+    svg.setAttribute('aria-hidden', 'true');
+    var use = document.createElementNS(SVG_NS, 'use');
+    use.setAttribute('href', '#icon-' + suitKey);
+    svg.appendChild(use);
+    return svg;
+  }
 
   function buildDeck() {
     var cards = [];
@@ -68,10 +81,7 @@
 
     if (rank === 'A') {
       container.classList.add('pips-ace');
-      var big = document.createElement('span');
-      big.className = 'suit-symbol suit-symbol-big';
-      big.textContent = suit.symbol;
-      container.appendChild(big);
+      container.appendChild(suitIcon(suit.key, 'suit-icon-big'));
       return;
     }
 
@@ -85,12 +95,9 @@
       var label = document.createElement('span');
       label.className = 'face-label';
       label.textContent = FACE_LABEL[rank];
-      var suitSpan = document.createElement('span');
-      suitSpan.className = 'suit-symbol face-suit';
-      suitSpan.textContent = suit.symbol;
       box.appendChild(letter);
       box.appendChild(label);
-      box.appendChild(suitSpan);
+      box.appendChild(suitIcon(suit.key, 'face-suit-icon'));
       container.appendChild(box);
       return;
     }
@@ -99,13 +106,8 @@
     layout.forEach(function (spot) {
       var col = spot.charAt(0); // l, c, r
       var row = spot.charAt(1); // 1-5
-      var pip = document.createElement('span');
-      pip.className = 'suit-symbol pip pip-col-' + col + ' pip-row-' + row;
-      if (row === '4' || row === '5') {
-        pip.classList.add('pip-flip');
-      }
-      pip.textContent = suit.symbol;
-      container.appendChild(pip);
+      var extra = 'pip pip-col-' + col + ' pip-row-' + row + (row === '4' || row === '5' ? ' pip-flip' : '');
+      container.appendChild(suitIcon(suit.key, extra));
     });
   }
 
@@ -120,7 +122,8 @@
       el.textContent = current.rank;
     });
     cardEl.querySelectorAll('.corner .suit').forEach(function (el) {
-      el.textContent = current.suit.symbol;
+      el.innerHTML = '';
+      el.appendChild(suitIcon(current.suit.key, 'corner-suit-icon'));
     });
 
     renderPips(current.rank, current.suit);
