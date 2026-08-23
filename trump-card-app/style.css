@@ -3,6 +3,11 @@
 }
 
 :root {
+  /* The whole app is intentionally dark-themed already — this stops
+     browsers that auto-adjust colors on pages that never declare a
+     scheme (a common cause of card art rendering washed-out/gray on
+     some Android Chrome configurations) from touching it. */
+  color-scheme: dark light;
   --felt-hi: #1c6b45;
   --felt-lo: #05301f;
   --gold: #cda545;
