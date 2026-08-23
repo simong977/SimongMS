@@ -126,6 +126,15 @@
     }
   }
 
+  // A stored uid only counts if it still names a real participant — the
+  // room can reset (e.g. the read-only reload below) while an old join
+  // flag lingers in sessionStorage, and that must not permanently block
+  // rejoining.
+  function myJoinedLi() {
+    var uid = myJoinedUid();
+    return uid ? participantsListEl.querySelector('li[data-uid="' + uid + '"]') : null;
+  }
+
   function markJoined(uid) {
     try {
       sessionStorage.setItem(JOIN_KEY, uid);
@@ -135,8 +144,7 @@
   }
 
   function updateJoinUI() {
-    var uid = myJoinedUid();
-    var mine = uid ? participantsListEl.querySelector('li[data-uid="' + uid + '"]') : null;
+    var mine = myJoinedLi();
     if (mine) {
       var n = Array.prototype.indexOf.call(participantsListEl.children, mine) + 1;
       joinBtn.disabled = true;
@@ -150,7 +158,7 @@
   }
 
   joinBtn.addEventListener('click', function () {
-    if (myJoinedUid()) return;
+    if (myJoinedLi()) return;
     var uid = String(parseInt(participantsListEl.getAttribute('data-next-uid'), 10) || 0);
     participantsListEl.setAttribute('data-next-uid', String(parseInt(uid, 10) + 1));
 
