@@ -138,6 +138,9 @@
     // reshuffle drops position back to 0, so tracking "have we shown this
     // position's rule yet" by position alone misses back-to-back reshuffles
     // that both land on position 0; this counter is unambiguous either way.
+    revealed: true, // false right after a fresh deck starts — the first card
+    // shows face-down until the turn holder flips it; every card dealt
+    // after that reveals immediately, same as before.
   };
 
   // ---------- rendering: purely derived from `state` (+ isHost/myUid for
@@ -181,7 +184,7 @@
     if (!controlsFooter) return;
     controlsFooter.hidden = state.phase !== 'playing';
     resetBtn.hidden = !isHost;
-    var atLastCard = state.position === state.deck.length - 1;
+    var atLastCard = state.revealed && state.position === state.deck.length - 1;
     nextBtn.disabled = !isMyTurn() || atLastCard;
 
     if (rulesBtn) {
@@ -265,9 +268,9 @@
 
   function renderCard(animate) {
     if (state.position < 0 || state.position >= state.deck.length) return;
-    cardUse.setAttribute('href', '#' + state.deck[state.position]);
+    cardUse.setAttribute('href', state.revealed ? '#' + state.deck[state.position] : '#cardback');
     counterEl.textContent = (state.position + 1) + ' / ' + state.deck.length;
-    maybeShowRuleForCurrentCard();
+    if (state.revealed) maybeShowRuleForCurrentCard();
 
     if (animate) {
       cardEl.classList.remove('flash');
@@ -275,7 +278,15 @@
       cardEl.classList.add('flash');
     }
 
-    if (state.position === state.deck.length - 1) {
+    if (!state.revealed) {
+      if (isMyTurn()) {
+        hintEl.textContent = '카드를 뒤집어보세요!';
+      } else {
+        var flipIdx = state.participants.findIndex(function (p) { return p.uid === state.turnUid; });
+        hintEl.textContent = flipIdx >= 0 ? (flipIdx + 1) + '번 ' + state.participants[flipIdx].name + '님이 카드를 뒤집을 차례예요.' : '';
+      }
+      nextBtn.textContent = '카드 뒤집기';
+    } else if (state.position === state.deck.length - 1) {
       hintEl.textContent = isHost ? '마지막 카드예요. 다시 섞으면 새로 시작해요.' : '마지막 카드예요.';
       nextBtn.textContent = '카드 다 봤어요';
     } else {
@@ -448,6 +459,17 @@
     state.position = 0;
     state.turnUid = state.participants.length > 0 ? state.participants[0].uid : null;
     state.dealSeq += 1;
+    state.revealed = false;
+    renderCard(true);
+    broadcastState();
+  }
+
+  // The turn holder flips the first card of a fresh deck face-up. Position
+  // and turn don't move — this is purely the reveal step; the usual
+  // 다음 카드 flow takes over unchanged from here.
+  function hostRevealCard() {
+    if (state.revealed) return;
+    state.revealed = true;
     renderCard(true);
     broadcastState();
   }
@@ -528,6 +550,10 @@
       var entry = clientConns.filter(function (c) { return c.conn === conn; })[0];
       if (!entry || entry.uid !== state.turnUid) return; // only the current turn-holder may deal
       hostAdvance();
+    } else if (msg.type === 'reveal') {
+      var revealEntry = clientConns.filter(function (c) { return c.conn === conn; })[0];
+      if (!revealEntry || revealEntry.uid !== state.turnUid) return; // only the current turn-holder may flip
+      hostRevealCard();
     }
   }
 
@@ -690,6 +716,14 @@
 
   nextBtn.addEventListener('click', function () {
     if (!isMyTurn()) return;
+    if (!state.revealed) {
+      if (isHost) {
+        hostRevealCard();
+      } else {
+        sendToHost({ type: 'reveal' });
+      }
+      return;
+    }
     if (isHost) {
       hostAdvance();
     } else {
