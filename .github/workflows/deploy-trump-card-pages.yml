@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - claude/trump-card-app-5y580x
     paths:
       - "trump-card-app/**"
       - ".github/workflows/deploy-trump-card-pages.yml"
