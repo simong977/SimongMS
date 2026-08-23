@@ -42,7 +42,6 @@
   var clientConns = []; // host's [{conn, uid}] for connected participants
   var nextUid = 0;
   var myUid = null; // this device's own participant uid, once joined
-  var joinRequested = false;
   var qrDrawn = false;
 
   var state = {
@@ -138,20 +137,15 @@
     updateJoinUI();
   }
 
+  // Joining is automatic (see startHost/startClient) — nobody can end up a
+  // permanent spectator just because they missed a button. This button is
+  // just a way to fix up the auto-assigned name afterward.
   function updateJoinUI() {
     var idx = myUid === null ? -1 : state.participants.findIndex(function (p) { return p.uid === myUid; });
     if (idx >= 0) {
-      joinBtn.disabled = true;
-      joinBtn.textContent = '참가 완료';
-      nicknameInput.disabled = true;
       joinNoteEl.textContent = '당신은 ' + (idx + 1) + '번째 참가자예요.';
-    } else if (joinRequested) {
-      joinBtn.disabled = true;
-      joinBtn.textContent = '참가 중...';
     } else {
-      joinBtn.disabled = false;
-      joinBtn.textContent = '참가하기';
-      joinNoteEl.textContent = '';
+      joinNoteEl.textContent = '연결 중...';
     }
   }
 
@@ -306,8 +300,17 @@
 
   function hostHandleMessage(conn, msg) {
     if (msg.type === 'join') {
-      var already = clientConns.some(function (c) { return c.conn === conn; });
-      if (already) return;
+      var existing = clientConns.filter(function (c) { return c.conn === conn; })[0];
+      if (existing) {
+        // Already in the room — this is a nickname update, not a new join.
+        var existingP = state.participants.filter(function (p) { return p.uid === existing.uid; })[0];
+        if (existingP) {
+          existingP.name = sanitizeName(msg.name, existingP.name);
+          renderParticipants();
+          broadcastState();
+        }
+        return;
+      }
       var uid = String(nextUid++);
       var name = sanitizeName(msg.name, DEFAULT_GUEST_NAME + (state.participants.length + 1));
       clientConns.push({ conn: conn, uid: uid });
@@ -352,6 +355,9 @@
     peer = new Peer();
     peer.on('open', function (id) {
       state.phase = 'lobby';
+      myUid = String(nextUid++);
+      state.participants.push({ uid: myUid, name: sanitizeName(nicknameInput.value, DEFAULT_HOST_NAME) });
+      state.turnUid = myUid;
       drawQr(buildJoinUrl(id));
       render();
     });
@@ -408,6 +414,9 @@
     peer = new Peer();
     peer.on('open', function () {
       hostConn = peer.connect(roomId, { reliable: true });
+      hostConn.on('open', function () {
+        sendToHost({ type: 'join', name: nicknameInput.value });
+      });
       hostConn.on('data', function (raw) {
         var msg;
         try {
@@ -417,7 +426,7 @@
         }
         if (msg.type === 'welcome') {
           myUid = msg.uid;
-          joinRequested = false;
+          updateJoinUI();
         } else if (msg.type === 'state') {
           state = msg.state;
           render();
@@ -444,18 +453,18 @@
     hostStartNewGame();
   });
 
+  // Joining already happened automatically (see startHost/startClient); this
+  // button just re-applies whatever is currently typed as this device's name.
   joinBtn.addEventListener('click', function () {
-    if (myUid !== null || joinRequested) return;
+    if (myUid === null) return; // not connected yet
     if (isHost) {
-      myUid = String(nextUid++);
-      var name = sanitizeName(nicknameInput.value, DEFAULT_HOST_NAME);
-      state.participants.push({ uid: myUid, name: name });
-      if (state.turnUid === null) state.turnUid = myUid;
-      renderParticipants();
-      broadcastState();
+      var p = state.participants.filter(function (p) { return p.uid === myUid; })[0];
+      if (p) {
+        p.name = sanitizeName(nicknameInput.value, p.name);
+        renderParticipants();
+        broadcastState();
+      }
     } else {
-      joinRequested = true;
-      updateJoinUI();
       sendToHost({ type: 'join', name: nicknameInput.value });
     }
   });
