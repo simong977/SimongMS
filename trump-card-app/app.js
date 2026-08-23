@@ -4,6 +4,8 @@
   var SUITS = ['spade', 'heart', 'diamond', 'club'];
   var RANKS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'jack', 'queen', 'king'];
   var ROOM_PARAM = 'room';
+  var DEFAULT_HOST_NAME = '방장';
+  var DEFAULT_GUEST_NAME = '참가자';
 
   var idleView = document.getElementById('idleView');
   var lobbyView = document.getElementById('lobbyView');
@@ -13,6 +15,7 @@
   var qrBox = document.getElementById('qrBox');
   var qrUrl = document.getElementById('qrUrl');
   var qrCopyBtn = document.getElementById('qrCopyBtn');
+  var nicknameInput = document.getElementById('nicknameInput');
   var participantsCountEl = document.getElementById('participantsCount');
   var participantsListEl = document.getElementById('participantsList');
   var joinNoteEl = document.getElementById('joinNote');
@@ -44,7 +47,8 @@
 
   var state = {
     phase: 'idle', // 'idle' | 'lobby' | 'playing'
-    participants: [], // [{uid}], in display order
+    participants: [], // [{uid, name}], in display AND turn order
+    turnUid: null, // whose turn it is to deal; null = no one has joined yet
     deck: [],
     position: -1,
   };
@@ -67,7 +71,24 @@
       renderCard(false);
     }
 
-    if (controlsFooter) controlsFooter.hidden = !isHost;
+    updateControlsVisibility();
+  }
+
+  // With no one in `state.participants` yet, the host plays solo and keeps
+  // full control (nothing to hand a turn to). Otherwise a turn belongs to
+  // whichever participant is next in line — including the host, if they
+  // joined their own room.
+  function isMyTurn() {
+    if (state.participants.length === 0) return isHost;
+    return myUid !== null && myUid === state.turnUid;
+  }
+
+  function updateControlsVisibility() {
+    if (!controlsFooter) return;
+    var mine = isMyTurn();
+    controlsFooter.hidden = state.phase !== 'playing' || !(isHost || mine);
+    resetBtn.hidden = !isHost;
+    nextBtn.hidden = !mine;
   }
 
   function renderParticipants() {
@@ -85,7 +106,7 @@
 
       var label = document.createElement('span');
       label.className = 'label';
-      label.textContent = (i + 1) + '번 참가자';
+      label.textContent = p.name;
       li.appendChild(label);
 
       // With only one participant there's nothing to reorder.
@@ -122,6 +143,7 @@
     if (idx >= 0) {
       joinBtn.disabled = true;
       joinBtn.textContent = '참가 완료';
+      nicknameInput.disabled = true;
       joinNoteEl.textContent = '당신은 ' + (idx + 1) + '번째 참가자예요.';
     } else if (joinRequested) {
       joinBtn.disabled = true;
@@ -131,6 +153,14 @@
       joinBtn.textContent = '참가하기';
       joinNoteEl.textContent = '';
     }
+  }
+
+  function turnHintText() {
+    if (isMyTurn()) return '당신의 차례예요! 다음 카드를 넘겨보세요.';
+    if (state.turnUid === null) return '';
+    var idx = state.participants.findIndex(function (p) { return p.uid === state.turnUid; });
+    if (idx < 0) return '';
+    return (idx + 1) + '번 ' + state.participants[idx].name + '님의 차례예요.';
   }
 
   function renderCard(animate) {
@@ -149,10 +179,12 @@
       nextBtn.textContent = '카드 다 봤어요';
       nextBtn.disabled = true;
     } else {
-      hintEl.textContent = isHost ? '' : '방장이 다음 카드를 넘기고 있어요.';
+      hintEl.textContent = turnHintText();
       nextBtn.textContent = '다음 카드';
       nextBtn.disabled = false;
     }
+
+    updateControlsVisibility();
   }
 
   // ---------- QR / share link ----------
@@ -188,6 +220,11 @@
     });
   }
 
+  function sanitizeName(raw, fallback) {
+    var name = String(raw || '').trim().slice(0, 12);
+    return name || fallback;
+  }
+
   // ---------- card game (host-authoritative; only the host ever calls
   // these — everyone else just renders whatever state the host sends) ----------
 
@@ -214,8 +251,16 @@
   function hostStartNewGame() {
     state.deck = shuffle(buildDeck());
     state.position = 0;
+    state.turnUid = state.participants.length > 0 ? state.participants[0].uid : null;
     renderCard(true);
     broadcastState();
+  }
+
+  function hostAdvanceTurn() {
+    if (state.participants.length === 0) return;
+    var idx = state.participants.findIndex(function (p) { return p.uid === state.turnUid; });
+    var nextIdx = idx < 0 ? 0 : (idx + 1) % state.participants.length;
+    state.turnUid = state.participants[nextIdx].uid;
   }
 
   function hostAdvance() {
@@ -225,6 +270,7 @@
     }
     if (state.position < state.deck.length - 1) {
       state.position += 1;
+      hostAdvanceTurn();
       renderCard(true);
       broadcastState();
     }
@@ -263,24 +309,37 @@
       var already = clientConns.some(function (c) { return c.conn === conn; });
       if (already) return;
       var uid = String(nextUid++);
+      var name = sanitizeName(msg.name, DEFAULT_GUEST_NAME + (state.participants.length + 1));
       clientConns.push({ conn: conn, uid: uid });
-      state.participants.push({ uid: uid });
+      state.participants.push({ uid: uid, name: name });
+      if (state.turnUid === null) state.turnUid = uid;
       conn.send(JSON.stringify({ type: 'welcome', uid: uid }));
       renderParticipants();
       broadcastState();
     } else if (msg.type === 'move') {
       hostMoveParticipant(msg.uid, msg.dir);
+    } else if (msg.type === 'next') {
+      var entry = clientConns.filter(function (c) { return c.conn === conn; })[0];
+      if (!entry || entry.uid !== state.turnUid) return; // only the current turn-holder may deal
+      hostAdvance();
     }
   }
 
   function hostRemoveConn(conn) {
     var entry = clientConns.filter(function (c) { return c.conn === conn; })[0];
     clientConns = clientConns.filter(function (c) { return c.conn !== conn; });
-    if (entry) {
-      state.participants = state.participants.filter(function (p) { return p.uid !== entry.uid; });
-      renderParticipants();
-      broadcastState();
+    if (!entry) return;
+    var oldIdx = state.participants.findIndex(function (p) { return p.uid === entry.uid; });
+    state.participants = state.participants.filter(function (p) { return p.uid !== entry.uid; });
+    if (state.turnUid === entry.uid) {
+      if (state.participants.length === 0) {
+        state.turnUid = null;
+      } else {
+        state.turnUid = state.participants[oldIdx % state.participants.length].uid;
+      }
     }
+    renderParticipants();
+    broadcastState();
   }
 
   function startHost() {
@@ -289,6 +348,7 @@
       return;
     }
     isHost = true;
+    nicknameInput.value = DEFAULT_HOST_NAME;
     peer = new Peer();
     peer.on('open', function (id) {
       state.phase = 'lobby';
@@ -388,13 +448,15 @@
     if (myUid !== null || joinRequested) return;
     if (isHost) {
       myUid = String(nextUid++);
-      state.participants.push({ uid: myUid });
+      var name = sanitizeName(nicknameInput.value, DEFAULT_HOST_NAME);
+      state.participants.push({ uid: myUid, name: name });
+      if (state.turnUid === null) state.turnUid = myUid;
       renderParticipants();
       broadcastState();
     } else {
       joinRequested = true;
       updateJoinUI();
-      sendToHost({ type: 'join' });
+      sendToHost({ type: 'join', name: nicknameInput.value });
     }
   });
 
@@ -415,8 +477,12 @@
   });
 
   nextBtn.addEventListener('click', function () {
-    if (!isHost) return;
-    hostAdvance();
+    if (!isMyTurn()) return;
+    if (isHost) {
+      hostAdvance();
+    } else {
+      sendToHost({ type: 'next' });
+    }
   });
 
   resetBtn.addEventListener('click', function () {
