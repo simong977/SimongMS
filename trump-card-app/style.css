@@ -231,6 +231,10 @@ body {
   margin-left: auto;
 }
 
+.move-buttons[hidden] {
+  display: none;
+}
+
 .move-buttons button {
   width: 22px;
   height: 22px;

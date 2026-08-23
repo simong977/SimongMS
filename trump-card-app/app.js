@@ -108,10 +108,14 @@
       var n = i + 1;
       var badge = li.querySelector('.badge');
       var label = li.querySelector('.label');
+      var moveGroup = li.querySelector('.move-buttons');
       var upBtn = li.querySelector('.move-up');
       var downBtn = li.querySelector('.move-down');
       if (badge) badge.textContent = String(n);
       if (label) label.textContent = n + '번 참가자';
+      // With only one participant there's nothing to reorder — show the
+      // count instead of two permanently-disabled arrows.
+      if (moveGroup) moveGroup.hidden = count <= 1;
       if (upBtn) upBtn.disabled = i === 0;
       if (downBtn) downBtn.disabled = i === count - 1;
     }
