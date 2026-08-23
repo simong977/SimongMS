@@ -56,7 +56,8 @@
   var cardUse = document.getElementById('cardUse');
   var counterEl = document.getElementById('counter');
   var hintEl = document.getElementById('hint');
-  var ruleBannerEl = document.getElementById('ruleBanner');
+  var ruleOverlayEl = document.getElementById('ruleOverlay');
+  var ruleOverlayTextEl = document.getElementById('ruleOverlayText');
   var nextBtn = document.getElementById('nextBtn');
   var resetBtn = document.getElementById('resetBtn');
   var controlsFooter = document.querySelector('.controls');
@@ -80,6 +81,48 @@
   var nextUid = 0;
   var myUid = null; // this device's own participant uid, once joined
   var qrDrawn = false;
+  var lastRuleShownPosition = -1; // which deck position we've already popped the rule overlay for
+
+  // ---------- rule popup sound (a plain synthesized tone, so there's no
+  // audio asset to fetch/cache; mobile browsers block audio until a user
+  // gesture happens, so we lazily create/unlock the AudioContext on the
+  // very first tap anywhere in the app) ----------
+  var audioCtx = null;
+  function ensureAudioCtx() {
+    if (audioCtx) return audioCtx;
+    var Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return null;
+    audioCtx = new Ctx();
+    return audioCtx;
+  }
+  document.addEventListener('click', function unlockAudioOnce() {
+    var ctx = ensureAudioCtx();
+    if (ctx && ctx.state === 'suspended') ctx.resume();
+    document.removeEventListener('click', unlockAudioOnce);
+  }, { once: true });
+
+  function playRuleSound() {
+    var ctx = ensureAudioCtx();
+    if (!ctx) return;
+    try {
+      if (ctx.state === 'suspended') ctx.resume();
+      var now = ctx.currentTime;
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, now);
+      osc.frequency.exponentialRampToValueAtTime(1320, now + 0.12);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.25, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.35);
+    } catch (e) {
+      /* sound is a nice-to-have; never let it break the game */
+    }
+  }
 
   var state = {
     phase: 'idle', // 'idle' | 'lobby' | 'playing'
@@ -211,7 +254,7 @@
     if (state.position < 0 || state.position >= state.deck.length) return;
     cardUse.setAttribute('href', '#' + state.deck[state.position]);
     counterEl.textContent = (state.position + 1) + ' / ' + state.deck.length;
-    renderRuleBanner();
+    maybeShowRuleForCurrentCard();
 
     if (animate) {
       cardEl.classList.remove('flash');
@@ -230,12 +273,31 @@
     updateControlsVisibility();
   }
 
-  function renderRuleBanner() {
-    if (!ruleBannerEl) return;
+  function showRuleOverlay(text) {
+    if (!ruleOverlayEl || !text) return;
+    ruleOverlayTextEl.textContent = text;
+    ruleOverlayEl.hidden = false;
+    playRuleSound();
+  }
+
+  function hideRuleOverlay() {
+    if (ruleOverlayEl) ruleOverlayEl.hidden = true;
+  }
+
+  // Pops the big rule overlay once per newly-dealt card (keyed on deck
+  // position, not on renderCard's `animate` flag) — that way it fires the
+  // same way whether this device dealt the card itself or just received it
+  // via a state broadcast.
+  function maybeShowRuleForCurrentCard() {
     var card = state.deck[state.position];
-    var text = card ? state.rules[rankOf(card)] : '';
-    ruleBannerEl.textContent = text || '';
-    ruleBannerEl.hidden = !text;
+    if (!card) return;
+    // A reshuffle drops position back down (usually to 0) — anything lower
+    // than what we already popped a rule for means a fresh deck, not a
+    // repeat of a position we've seen before.
+    if (state.position < lastRuleShownPosition) lastRuleShownPosition = -1;
+    if (state.position === lastRuleShownPosition) return;
+    lastRuleShownPosition = state.position;
+    showRuleOverlay(state.rules[rankOf(card)]);
   }
 
   function renderRulesModal() {
@@ -259,7 +321,6 @@
         input.addEventListener('change', function () {
           state.rules[rank] = sanitizeRuleText(input.value);
           input.value = state.rules[rank];
-          renderRuleBanner();
           broadcastState();
         });
         li.appendChild(input);
@@ -607,6 +668,10 @@
     rulesCloseBtn.addEventListener('click', function () {
       rulesModal.hidden = true;
     });
+  }
+
+  if (ruleOverlayEl) {
+    ruleOverlayEl.addEventListener('click', hideRuleOverlay);
   }
 
   // ---------- entry point ----------

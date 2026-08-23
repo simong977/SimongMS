@@ -380,24 +380,6 @@ body {
   to { transform: scale(1) translateY(0) rotate(0); opacity: 1; }
 }
 
-.rule-banner {
-  flex: 0 0 auto;
-  margin: 0;
-  padding: 6px 18px;
-  border-radius: 999px;
-  background: rgba(205, 165, 69, 0.16);
-  border: 1px solid var(--gold-dim);
-  color: var(--gold);
-  font-size: 13px;
-  font-weight: 700;
-  text-align: center;
-  max-width: 100%;
-}
-
-.rule-banner[hidden] {
-  display: none;
-}
-
 .hint {
   flex: 0 0 auto;
   min-height: 16px;
@@ -520,6 +502,54 @@ body {
   padding: 7px 2px;
   opacity: 0.85;
   word-break: break-word;
+}
+
+/* ---- big rule popup on every deal ---- */
+.rule-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  background: rgba(2, 20, 12, 0.86);
+  cursor: pointer;
+  animation: rule-overlay-in 0.18s ease-out;
+}
+
+.rule-overlay[hidden] {
+  display: none;
+}
+
+.rule-overlay-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.rule-overlay-text {
+  font-family: "Noto Serif KR", serif;
+  font-size: clamp(28px, 9vw, 48px);
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--gold);
+  text-align: center;
+  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
+  max-width: 100%;
+  word-break: keep-all;
+}
+
+.rule-overlay-hint {
+  font-size: 13px;
+  color: var(--cream);
+  opacity: 0.7;
+}
+
+@keyframes rule-overlay-in {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .controls {
