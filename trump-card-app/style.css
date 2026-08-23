@@ -101,6 +101,22 @@ body {
   display: none;
 }
 
+.rule-timer-select {
+  flex: 0 0 auto;
+  font-family: inherit;
+  font-size: 12px;
+  max-width: 84px;
+  padding: 5px 6px;
+  border-radius: 8px;
+  background: rgba(243, 234, 210, 0.08);
+  border: 1px solid rgba(243, 234, 210, 0.28);
+  color: var(--cream);
+}
+
+.rule-timer-select[hidden] {
+  display: none;
+}
+
 /* A "view" is one of the three screens (idle / lobby / play). Exactly
    one is ever unhidden; each owns the full remaining height itself so
    swapping views never changes the page's total height. Always pair a

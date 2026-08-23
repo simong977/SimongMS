@@ -58,6 +58,8 @@
   var hintEl = document.getElementById('hint');
   var ruleOverlayEl = document.getElementById('ruleOverlay');
   var ruleOverlayTextEl = document.getElementById('ruleOverlayText');
+  var ruleOverlayHintEl = document.getElementById('ruleOverlayHint');
+  var ruleTimerSelect = document.getElementById('ruleTimerSelect');
   var nextBtn = document.getElementById('nextBtn');
   var resetBtn = document.getElementById('resetBtn');
   var controlsFooter = document.querySelector('.controls');
@@ -81,7 +83,7 @@
   var nextUid = 0;
   var myUid = null; // this device's own participant uid, once joined
   var qrDrawn = false;
-  var lastRuleShownPosition = -1; // which deck position we've already popped the rule overlay for
+  var lastRuleShownSeq = -1; // state.dealSeq value we've already popped the rule overlay for
 
   // ---------- rule popup sound (a plain synthesized tone, so there's no
   // audio asset to fetch/cache; mobile browsers block audio until a user
@@ -131,6 +133,11 @@
     deck: [],
     position: -1,
     rules: cloneRules(), // rank -> rule text; host-editable, broadcast like everything else
+    ruleOverlayDuration: 5, // seconds before the rule popup auto-closes; 0 = tap-only, host-editable
+    dealSeq: 0, // bumped on every new card becoming current (deal or reshuffle) — a
+    // reshuffle drops position back to 0, so tracking "have we shown this
+    // position's rule yet" by position alone misses back-to-back reshuffles
+    // that both land on position 0; this counter is unambiguous either way.
   };
 
   // ---------- rendering: purely derived from `state` (+ isHost/myUid for
@@ -180,6 +187,12 @@
     if (rulesBtn) {
       rulesBtn.hidden = state.phase !== 'playing';
       rulesBtn.textContent = isHost ? '룰 수정' : '룰 확인';
+    }
+
+    if (ruleTimerSelect) {
+      var showTimerSelect = state.phase === 'playing' && isHost;
+      ruleTimerSelect.hidden = !showTimerSelect;
+      if (showTimerSelect) ruleTimerSelect.value = String(state.ruleOverlayDuration);
     }
   }
 
@@ -274,22 +287,49 @@
   }
 
   var ruleOverlayTimer = null;
+  var ruleOverlayInterval = null;
 
+  function clearRuleOverlayTimers() {
+    if (ruleOverlayTimer) {
+      clearTimeout(ruleOverlayTimer);
+      ruleOverlayTimer = null;
+    }
+    if (ruleOverlayInterval) {
+      clearInterval(ruleOverlayInterval);
+      ruleOverlayInterval = null;
+    }
+  }
+
+  // duration is in seconds; 0 (or unset) means tap-only, no auto-close.
   function showRuleOverlay(text) {
     if (!ruleOverlayEl || !text) return;
     ruleOverlayTextEl.textContent = text;
     ruleOverlayEl.hidden = false;
     playRuleSound();
-    if (ruleOverlayTimer) clearTimeout(ruleOverlayTimer);
-    ruleOverlayTimer = window.setTimeout(hideRuleOverlay, 5000);
+    clearRuleOverlayTimers();
+
+    var duration = state.ruleOverlayDuration || 0;
+    if (duration <= 0) {
+      if (ruleOverlayHintEl) ruleOverlayHintEl.textContent = '터치하면 닫혀요';
+      return;
+    }
+
+    var remaining = duration;
+    if (ruleOverlayHintEl) ruleOverlayHintEl.textContent = remaining + '초 후 자동으로 닫혀요';
+    ruleOverlayInterval = window.setInterval(function () {
+      remaining -= 1;
+      if (remaining <= 0) {
+        hideRuleOverlay();
+        return;
+      }
+      if (ruleOverlayHintEl) ruleOverlayHintEl.textContent = remaining + '초 후 자동으로 닫혀요';
+    }, 1000);
+    ruleOverlayTimer = window.setTimeout(hideRuleOverlay, duration * 1000);
   }
 
   function hideRuleOverlay() {
     if (ruleOverlayEl) ruleOverlayEl.hidden = true;
-    if (ruleOverlayTimer) {
-      clearTimeout(ruleOverlayTimer);
-      ruleOverlayTimer = null;
-    }
+    clearRuleOverlayTimers();
   }
 
   // Pops the big rule overlay once per newly-dealt card (keyed on deck
@@ -298,13 +338,8 @@
   // via a state broadcast.
   function maybeShowRuleForCurrentCard() {
     var card = state.deck[state.position];
-    if (!card) return;
-    // A reshuffle drops position back down (usually to 0) — anything lower
-    // than what we already popped a rule for means a fresh deck, not a
-    // repeat of a position we've seen before.
-    if (state.position < lastRuleShownPosition) lastRuleShownPosition = -1;
-    if (state.position === lastRuleShownPosition) return;
-    lastRuleShownPosition = state.position;
+    if (!card || state.dealSeq === lastRuleShownSeq) return;
+    lastRuleShownSeq = state.dealSeq;
     showRuleOverlay(state.rules[rankOf(card)]);
   }
 
@@ -412,6 +447,7 @@
     state.deck = shuffle(buildDeck());
     state.position = 0;
     state.turnUid = state.participants.length > 0 ? state.participants[0].uid : null;
+    state.dealSeq += 1;
     renderCard(true);
     broadcastState();
   }
@@ -430,6 +466,7 @@
     }
     if (state.position < state.deck.length - 1) {
       state.position += 1;
+      state.dealSeq += 1;
       hostAdvanceTurn();
       renderCard(true);
       broadcastState();
@@ -680,6 +717,14 @@
 
   if (ruleOverlayEl) {
     ruleOverlayEl.addEventListener('click', hideRuleOverlay);
+  }
+
+  if (ruleTimerSelect) {
+    ruleTimerSelect.addEventListener('change', function () {
+      if (!isHost) return;
+      state.ruleOverlayDuration = parseInt(ruleTimerSelect.value, 10) || 0;
+      broadcastState();
+    });
   }
 
   // ---------- entry point ----------
