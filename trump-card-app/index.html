@@ -25,6 +25,13 @@
   <header class="topbar">
     <h1>트럼프 카드</h1>
     <div class="topbar-right">
+      <select id="ruleTimerSelect" class="rule-timer-select" hidden>
+        <option value="0">터치로 닫기</option>
+        <option value="3">3초</option>
+        <option value="5" selected>5초</option>
+        <option value="10">10초</option>
+        <option value="15">15초</option>
+      </select>
       <button id="rulesBtn" class="rules-btn" type="button" hidden>룰 수정</button>
       <div class="counter" id="counter">대기 중</div>
     </div>
@@ -81,7 +88,7 @@
 <div id="ruleOverlay" class="rule-overlay" hidden>
   <div class="rule-overlay-inner">
     <div class="rule-overlay-text" id="ruleOverlayText"></div>
-    <div class="rule-overlay-hint">터치하면 닫혀요</div>
+    <div class="rule-overlay-hint" id="ruleOverlayHint">터치하면 닫혀요</div>
   </div>
 </div>
 
