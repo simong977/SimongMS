@@ -3,7 +3,7 @@
 
   var SUITS = ['spade', 'heart', 'diamond', 'club'];
   var RANKS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'jack', 'queen', 'king'];
-  var JOIN_KEY = 'tc_joined_number';
+  var ROOM_PARAM = 'room';
 
   var idleView = document.getElementById('idleView');
   var lobbyView = document.getElementById('lobbyView');
@@ -25,62 +25,155 @@
   var hintEl = document.getElementById('hint');
   var nextBtn = document.getElementById('nextBtn');
   var resetBtn = document.getElementById('resetBtn');
-  var deckState = document.getElementById('deckState');
-  var roomState = document.getElementById('roomState');
+  var controlsFooter = document.querySelector('.controls');
 
-  var readOnly = false;
+  // ---------- networking state ----------
+  // The host phone holds the one authoritative copy of `state` and
+  // broadcasts it to everyone on every change; a joining phone only ever
+  // renders whatever `state` the host last sent it. No shared document,
+  // no external backend — just a direct P2P data channel per participant,
+  // with the host as the hub.
+  var isHost = false;
+  var peer = null;
+  var hostConn = null; // client's connection to the host
+  var clientConns = []; // host's [{conn, uid}] for connected participants
+  var nextUid = 0;
+  var myUid = null; // this device's own participant uid, once joined
+  var joinRequested = false;
   var qrDrawn = false;
 
-  // ---------- room phase (idle -> lobby -> playing), synced via
-  // roomState's data-phase attribute ----------
+  var state = {
+    phase: 'idle', // 'idle' | 'lobby' | 'playing'
+    participants: [], // [{uid}], in display order
+    deck: [],
+    position: -1,
+  };
 
-  function currentPhase() {
-    return roomState.getAttribute('data-phase') || 'idle';
+  // ---------- rendering: purely derived from `state` (+ isHost/myUid for
+  // which controls this device gets to see) ----------
+
+  function render() {
+    idleView.hidden = state.phase !== 'idle';
+    lobbyView.hidden = state.phase !== 'lobby';
+    playView.hidden = state.phase !== 'playing';
+
+    if (state.phase === 'lobby') {
+      counterEl.textContent = '대기 중';
+      renderParticipants();
+      launchBtn.hidden = !isHost;
+    } else if (state.phase === 'idle') {
+      counterEl.textContent = '대기 중';
+    } else if (state.phase === 'playing') {
+      renderCard(false);
+    }
+
+    if (controlsFooter) controlsFooter.hidden = !isHost;
   }
 
-  function applyPhase(phase) {
-    idleView.hidden = phase !== 'idle';
-    lobbyView.hidden = phase !== 'lobby';
-    playView.hidden = phase !== 'playing';
+  function renderParticipants() {
+    var list = state.participants;
+    participantsCountEl.textContent = '참가 인원: ' + list.length + '명';
+    participantsListEl.innerHTML = '';
+    list.forEach(function (p, i) {
+      var li = document.createElement('li');
+      li.setAttribute('data-uid', p.uid);
 
-    if (phase === 'lobby') {
-      counterEl.textContent = '대기 중';
-      ensureQrDrawn();
-      renderParticipants();
-    } else if (phase === 'idle') {
-      counterEl.textContent = '대기 중';
+      var badge = document.createElement('span');
+      badge.className = 'badge';
+      badge.textContent = String(i + 1);
+      li.appendChild(badge);
+
+      var label = document.createElement('span');
+      label.className = 'label';
+      label.textContent = (i + 1) + '번 참가자';
+      li.appendChild(label);
+
+      // With only one participant there's nothing to reorder.
+      if (list.length > 1) {
+        var moveGroup = document.createElement('span');
+        moveGroup.className = 'move-buttons';
+
+        var upBtn = document.createElement('button');
+        upBtn.type = 'button';
+        upBtn.className = 'move-up';
+        upBtn.setAttribute('aria-label', '위로 이동');
+        upBtn.textContent = '▲';
+        upBtn.disabled = i === 0;
+
+        var downBtn = document.createElement('button');
+        downBtn.type = 'button';
+        downBtn.className = 'move-down';
+        downBtn.setAttribute('aria-label', '아래로 이동');
+        downBtn.textContent = '▼';
+        downBtn.disabled = i === list.length - 1;
+
+        moveGroup.appendChild(upBtn);
+        moveGroup.appendChild(downBtn);
+        li.appendChild(moveGroup);
+      }
+
+      participantsListEl.appendChild(li);
+    });
+    updateJoinUI();
+  }
+
+  function updateJoinUI() {
+    var idx = myUid === null ? -1 : state.participants.findIndex(function (p) { return p.uid === myUid; });
+    if (idx >= 0) {
+      joinBtn.disabled = true;
+      joinBtn.textContent = '참가 완료';
+      joinNoteEl.textContent = '당신은 ' + (idx + 1) + '번째 참가자예요.';
+    } else if (joinRequested) {
+      joinBtn.disabled = true;
+      joinBtn.textContent = '참가 중...';
+    } else {
+      joinBtn.disabled = false;
+      joinBtn.textContent = '참가하기';
+      joinNoteEl.textContent = '';
     }
   }
 
-  function setPhase(phase) {
-    roomState.setAttribute('data-phase', phase);
-    applyPhase(phase);
+  function renderCard(animate) {
+    if (state.position < 0 || state.position >= state.deck.length) return;
+    cardUse.setAttribute('href', '#' + state.deck[state.position]);
+    counterEl.textContent = (state.position + 1) + ' / ' + state.deck.length;
+
+    if (animate) {
+      cardEl.classList.remove('flash');
+      void cardEl.offsetWidth;
+      cardEl.classList.add('flash');
+    }
+
+    if (state.position === state.deck.length - 1) {
+      hintEl.textContent = isHost ? '마지막 카드예요. 다시 섞으면 새로 시작해요.' : '마지막 카드예요.';
+      nextBtn.textContent = '카드 다 봤어요';
+      nextBtn.disabled = true;
+    } else {
+      hintEl.textContent = isHost ? '' : '방장이 다음 카드를 넘기고 있어요.';
+      nextBtn.textContent = '다음 카드';
+      nextBtn.disabled = false;
+    }
   }
 
-  startRoomBtn.addEventListener('click', function () {
-    setPhase('lobby');
-  });
+  // ---------- QR / share link ----------
 
-  launchBtn.addEventListener('click', function () {
-    setPhase('playing');
-    startNewGame();
-  });
+  function buildJoinUrl(roomId) {
+    return window.location.origin + window.location.pathname + '?' + ROOM_PARAM + '=' + encodeURIComponent(roomId);
+  }
 
-  // ---------- lobby: QR share + participant roll call ----------
-
-  function ensureQrDrawn() {
+  function drawQr(url) {
     if (qrDrawn || typeof qrcode !== 'function') return;
     var qr = qrcode(0, 'M');
-    qr.addData(window.location.href);
+    qr.addData(url);
     qr.make();
     qrBox.innerHTML = qr.createSvgTag({ cellSize: 5, margin: 4, scalable: true });
-    qrUrl.textContent = window.location.href;
+    qrUrl.textContent = url;
     qrDrawn = true;
   }
 
   if (qrCopyBtn) {
     qrCopyBtn.addEventListener('click', function () {
-      var url = window.location.href;
+      var url = qrUrl.textContent || window.location.href;
       var done = function () {
         qrCopyBtn.textContent = '복사됐어요';
         window.setTimeout(function () {
@@ -95,133 +188,8 @@
     });
   }
 
-  // Each participant's <li> carries a data-uid assigned once at join
-  // time — a stable identity that survives reordering. The badge number
-  // shown on screen is never stored; it's always recomputed from DOM
-  // order, so moving an <li> is enough to renumber everyone.
-  function renderParticipants() {
-    var items = participantsListEl.children;
-    var count = items.length;
-    participantsCountEl.textContent = '참가 인원: ' + count + '명';
-    for (var i = 0; i < count; i++) {
-      var li = items[i];
-      var n = i + 1;
-      var badge = li.querySelector('.badge');
-      var label = li.querySelector('.label');
-      var moveGroup = li.querySelector('.move-buttons');
-      var upBtn = li.querySelector('.move-up');
-      var downBtn = li.querySelector('.move-down');
-      if (badge) badge.textContent = String(n);
-      if (label) label.textContent = n + '번 참가자';
-      // With only one participant there's nothing to reorder — show the
-      // count instead of two permanently-disabled arrows.
-      if (moveGroup) moveGroup.hidden = count <= 1;
-      if (upBtn) upBtn.disabled = i === 0;
-      if (downBtn) downBtn.disabled = i === count - 1;
-    }
-    updateJoinUI();
-  }
-
-  function myJoinedUid() {
-    try {
-      return sessionStorage.getItem(JOIN_KEY);
-    } catch (e) {
-      return null;
-    }
-  }
-
-  // A stored uid only counts if it still names a real participant — the
-  // room can reset (e.g. the read-only reload below) while an old join
-  // flag lingers in sessionStorage, and that must not permanently block
-  // rejoining.
-  function myJoinedLi() {
-    var uid = myJoinedUid();
-    return uid ? participantsListEl.querySelector('li[data-uid="' + uid + '"]') : null;
-  }
-
-  function markJoined(uid) {
-    try {
-      sessionStorage.setItem(JOIN_KEY, uid);
-    } catch (e) {
-      /* private mode etc. — join still shows in the shared list */
-    }
-  }
-
-  function updateJoinUI() {
-    var mine = myJoinedLi();
-    if (mine) {
-      var n = Array.prototype.indexOf.call(participantsListEl.children, mine) + 1;
-      joinBtn.disabled = true;
-      joinBtn.textContent = '참가 완료';
-      joinNoteEl.textContent = '당신은 ' + n + '번째 참가자예요.';
-    } else {
-      joinBtn.disabled = false;
-      joinBtn.textContent = '참가하기';
-      joinNoteEl.textContent = '';
-    }
-  }
-
-  joinBtn.addEventListener('click', function () {
-    if (myJoinedLi()) return;
-    var uid = String(parseInt(participantsListEl.getAttribute('data-next-uid'), 10) || 0);
-    participantsListEl.setAttribute('data-next-uid', String(parseInt(uid, 10) + 1));
-
-    var li = document.createElement('li');
-    li.setAttribute('data-uid', uid);
-
-    var badge = document.createElement('span');
-    badge.className = 'badge';
-    li.appendChild(badge);
-
-    var label = document.createElement('span');
-    label.className = 'label';
-    li.appendChild(label);
-
-    var moveGroup = document.createElement('span');
-    moveGroup.className = 'move-buttons';
-
-    var upBtn = document.createElement('button');
-    upBtn.type = 'button';
-    upBtn.className = 'move-up';
-    upBtn.setAttribute('aria-label', '위로 이동');
-    upBtn.textContent = '▲';
-
-    var downBtn = document.createElement('button');
-    downBtn.type = 'button';
-    downBtn.className = 'move-down';
-    downBtn.setAttribute('aria-label', '아래로 이동');
-    downBtn.textContent = '▼';
-
-    moveGroup.appendChild(upBtn);
-    moveGroup.appendChild(downBtn);
-    li.appendChild(moveGroup);
-
-    participantsListEl.appendChild(li);
-    markJoined(uid);
-    renderParticipants();
-  });
-
-  // Delegated on the static <ol> (present since page load) rather than
-  // bound per-button, so reordering keeps working even after a remote
-  // participant's join or move causes the list's <li>s to be rebuilt.
-  participantsListEl.addEventListener('click', function (evt) {
-    var btn = evt.target.closest && evt.target.closest('.move-up, .move-down');
-    if (!btn) return;
-    var li = btn.closest('li');
-    if (!li) return;
-    if (btn.classList.contains('move-up')) {
-      var prev = li.previousElementSibling;
-      if (prev) participantsListEl.insertBefore(li, prev);
-    } else {
-      var next = li.nextElementSibling;
-      if (next) participantsListEl.insertBefore(next, li);
-    }
-    renderParticipants();
-  });
-
-  // ---------- card game (unchanged logic; state lives on deckState's
-  // data-* attributes so whoever clicks reads the current state off the
-  // page rather than trusting local memory) ----------
+  // ---------- card game (host-authoritative; only the host ever calls
+  // these — everyone else just renders whatever state the host sends) ----------
 
   function buildDeck() {
     var cards = [];
@@ -243,155 +211,225 @@
     return arr;
   }
 
-  function getState() {
-    var raw = deckState.getAttribute('data-deck') || '';
-    var deck = raw ? raw.split(',') : [];
-    var position = parseInt(deckState.getAttribute('data-position'), 10);
-    if (isNaN(position)) position = -1;
-    return { deck: deck, position: position };
+  function hostStartNewGame() {
+    state.deck = shuffle(buildDeck());
+    state.position = 0;
+    renderCard(true);
+    broadcastState();
   }
 
-  function setState(deck, position) {
-    deckState.setAttribute('data-deck', deck.join(','));
-    deckState.setAttribute('data-position', String(position));
-  }
-
-  function renderFromState(animate) {
-    var s = getState();
-    if (s.position < 0 || s.position >= s.deck.length) return;
-
-    cardUse.setAttribute('href', '#' + s.deck[s.position]);
-    counterEl.textContent = (s.position + 1) + ' / ' + s.deck.length;
-
-    if (animate) {
-      cardEl.classList.remove('flash');
-      void cardEl.offsetWidth;
-      cardEl.classList.add('flash');
-    }
-
-    if (s.position === s.deck.length - 1) {
-      hintEl.textContent = '마지막 카드예요. 다시 섞으면 새로 시작해요.';
-      nextBtn.textContent = '카드 다 봤어요';
-      nextBtn.disabled = true;
-    } else {
-      hintEl.textContent = '';
-      nextBtn.textContent = '다음 카드';
-      nextBtn.disabled = false;
-    }
-  }
-
-  function startNewGame() {
-    setState(shuffle(buildDeck()), 0);
-    renderFromState(true);
-  }
-
-  function advance() {
-    var s = getState();
-    if (s.position < 0) {
-      startNewGame();
+  function hostAdvance() {
+    if (state.position < 0) {
+      hostStartNewGame();
       return;
     }
-    if (s.position < s.deck.length - 1) {
-      setState(s.deck, s.position + 1);
-      renderFromState(true);
+    if (state.position < state.deck.length - 1) {
+      state.position += 1;
+      renderCard(true);
+      broadcastState();
     }
   }
 
-  nextBtn.addEventListener('click', advance);
-  resetBtn.addEventListener('click', startNewGame);
-
-  // ---------- initial render from whatever is already on the page
-  // (a friend joining a room already in progress) ----------
-
-  // This writes to idleView/lobbyView/playView/card/etc. with no click
-  // behind it — on a live doc, an unmarked element that a script mutates
-  // with no gesture gets silently desynced (a claude:sync-off fires from
-  // it). Doing this raw on load was tripping that on every join-mid-game,
-  // which then got misread as "this viewer lost write access" below. Run
-  // it through artifact.sync() (the documented escape hatch for a
-  // legitimate no-gesture write) once the runtime is known; plain calls
-  // are safe when there is no live-doc runtime to trip at all.
-  function initialCatchUp() {
-    applyPhase(currentPhase());
-    if (currentPhase() === 'playing' && getState().position >= 0) {
-      renderFromState(false);
-    }
+  function hostMoveParticipant(uid, dir) {
+    var idx = state.participants.findIndex(function (p) { return p.uid === uid; });
+    if (idx < 0) return;
+    var swapWith = idx + (dir < 0 ? -1 : 1);
+    if (swapWith < 0 || swapWith >= state.participants.length) return;
+    var tmp = state.participants[idx];
+    state.participants[idx] = state.participants[swapWith];
+    state.participants[swapWith] = tmp;
+    renderParticipants();
+    broadcastState();
   }
 
-  // No multiplayer runtime available (the downloaded file, GitHub
-  // Pages): skip the lobby, behave exactly like the old solo app —
-  // but only if no one has touched the room yet.
-  function fallBackToSoloPlay() {
-    if (currentPhase() !== 'idle') return;
-    playView.hidden = false;
-    idleView.hidden = true;
-    hintEl.textContent = '다음 카드를 눌러서 시작해요.';
-  }
+  // ---------- networking: host ----------
 
-  (function initMultiplayer() {
-    try {
-      if (!window.claude || typeof window.claude.use !== 'function') {
-        initialCatchUp();
-        fallBackToSoloPlay();
-        return;
+  function broadcastState() {
+    if (!isHost) return;
+    var payload = JSON.stringify({ type: 'state', state: state });
+    clientConns.forEach(function (c) {
+      if (c.conn.open) {
+        try {
+          c.conn.send(payload);
+        } catch (e) {
+          /* a dead connection; its own close handler will clean it up */
+        }
       }
-      window.claude.use('artifact').then(function (artifact) {
-        if (!artifact) {
-          initialCatchUp();
-          fallBackToSoloPlay();
+    });
+  }
+
+  function hostHandleMessage(conn, msg) {
+    if (msg.type === 'join') {
+      var already = clientConns.some(function (c) { return c.conn === conn; });
+      if (already) return;
+      var uid = String(nextUid++);
+      clientConns.push({ conn: conn, uid: uid });
+      state.participants.push({ uid: uid });
+      conn.send(JSON.stringify({ type: 'welcome', uid: uid }));
+      renderParticipants();
+      broadcastState();
+    } else if (msg.type === 'move') {
+      hostMoveParticipant(msg.uid, msg.dir);
+    }
+  }
+
+  function hostRemoveConn(conn) {
+    var entry = clientConns.filter(function (c) { return c.conn === conn; })[0];
+    clientConns = clientConns.filter(function (c) { return c.conn !== conn; });
+    if (entry) {
+      state.participants = state.participants.filter(function (p) { return p.uid !== entry.uid; });
+      renderParticipants();
+      broadcastState();
+    }
+  }
+
+  function startHost() {
+    if (typeof Peer !== 'function') {
+      startSoloPlay();
+      return;
+    }
+    isHost = true;
+    peer = new Peer();
+    peer.on('open', function (id) {
+      state.phase = 'lobby';
+      drawQr(buildJoinUrl(id));
+      render();
+    });
+    peer.on('connection', function (conn) {
+      conn.on('data', function (raw) {
+        var msg;
+        try {
+          msg = JSON.parse(raw);
+        } catch (e) {
           return;
         }
-        if (typeof artifact.sync === 'function') {
-          artifact.sync(initialCatchUp).catch(function () {
-            initialCatchUp();
-          });
-        } else {
-          initialCatchUp();
-        }
-      }, function () {
-        initialCatchUp();
-        fallBackToSoloPlay();
+        hostHandleMessage(conn, msg);
       });
-    } catch (e) {
-      initialCatchUp();
-      fallBackToSoloPlay();
-    }
-  })();
-
-  // ---------- reacting to other people's clicks ----------
-
-  function lockToReadOnly() {
-    if (readOnly) return;
-    readOnly = true;
-    nextBtn.disabled = true;
-    resetBtn.disabled = true;
-    startRoomBtn.disabled = true;
-    joinBtn.disabled = true;
-    launchBtn.disabled = true;
-    window.setTimeout(function () {
-      window.location.reload();
-    }, 600);
+      conn.on('close', function () {
+        hostRemoveConn(conn);
+      });
+    });
+    peer.on('error', function () {
+      hintEl.textContent = '연결에 문제가 생겼어요. 새로고침 후 다시 시도해주세요.';
+    });
   }
 
-  // A desynced element (claude:sync-off) only means that ONE region
-  // stopped saving — a genuinely read-only viewer is the case where the
-  // whole page, down to <body> itself, goes read-only. Treat only that as
-  // "this viewer lost write access"; anything narrower must not lock out
-  // someone who can still write.
-  document.addEventListener('claude:sync-off', function (evt) {
-    if (evt.target === document.body || document.body.getAttribute('artifact-sync-state') === 'off') {
-      lockToReadOnly();
+  // No multiplayer runtime available at all (script failed to load,
+  // fully offline): skip the lobby, just deal cards locally.
+  function startSoloPlay() {
+    isHost = true;
+    state.phase = 'playing';
+    hostStartNewGame();
+    render();
+  }
+
+  // ---------- networking: client ----------
+
+  function sendToHost(msg) {
+    if (hostConn && hostConn.open) {
+      try {
+        hostConn.send(JSON.stringify(msg));
+      } catch (e) {
+        /* connection is likely dead; its close handler will surface that */
+      }
+    }
+  }
+
+  function startClient(roomId) {
+    if (typeof Peer !== 'function') {
+      joinNoteEl.textContent = '실시간 연결 기능을 불러오지 못했어요. 인터넷 연결을 확인해주세요.';
+      return;
+    }
+    isHost = false;
+    state.phase = 'lobby';
+    drawQr(buildJoinUrl(roomId));
+    render();
+
+    peer = new Peer();
+    peer.on('open', function () {
+      hostConn = peer.connect(roomId, { reliable: true });
+      hostConn.on('data', function (raw) {
+        var msg;
+        try {
+          msg = JSON.parse(raw);
+        } catch (e) {
+          return;
+        }
+        if (msg.type === 'welcome') {
+          myUid = msg.uid;
+          joinRequested = false;
+        } else if (msg.type === 'state') {
+          state = msg.state;
+          render();
+        }
+      });
+      hostConn.on('close', function () {
+        joinNoteEl.textContent = '방장과 연결이 끊어졌어요.';
+        joinBtn.disabled = true;
+      });
+    });
+    peer.on('error', function () {
+      joinNoteEl.textContent = '방에 연결하지 못했어요. 링크를 다시 확인해주세요.';
+    });
+  }
+
+  // ---------- button wiring ----------
+
+  startRoomBtn.addEventListener('click', startHost);
+
+  launchBtn.addEventListener('click', function () {
+    if (!isHost) return;
+    state.phase = 'playing';
+    render();
+    hostStartNewGame();
+  });
+
+  joinBtn.addEventListener('click', function () {
+    if (myUid !== null || joinRequested) return;
+    if (isHost) {
+      myUid = String(nextUid++);
+      state.participants.push({ uid: myUid });
+      renderParticipants();
+      broadcastState();
+    } else {
+      joinRequested = true;
+      updateJoinUI();
+      sendToHost({ type: 'join' });
     }
   });
 
-  // Attribute-only changes (phase, deck position) are patched into the
-  // DOM for us and just need a re-render; a brand new element (someone
-  // else joining) instead re-runs this whole script from the top, which
-  // re-derives everything from the page's current state naturally.
-  document.addEventListener('claude:edit', function () {
-    applyPhase(currentPhase());
-    if (currentPhase() === 'playing') {
-      renderFromState(true);
+  // Delegated on the static <ol> (present since page load) rather than
+  // bound per-button, since the list is fully rebuilt on every render.
+  participantsListEl.addEventListener('click', function (evt) {
+    var btn = evt.target.closest && evt.target.closest('.move-up, .move-down');
+    if (!btn) return;
+    var li = btn.closest('li');
+    if (!li) return;
+    var uid = li.getAttribute('data-uid');
+    var dir = btn.classList.contains('move-up') ? -1 : 1;
+    if (isHost) {
+      hostMoveParticipant(uid, dir);
+    } else {
+      sendToHost({ type: 'move', uid: uid, dir: dir });
     }
   });
+
+  nextBtn.addEventListener('click', function () {
+    if (!isHost) return;
+    hostAdvance();
+  });
+
+  resetBtn.addEventListener('click', function () {
+    if (!isHost) return;
+    hostStartNewGame();
+  });
+
+  // ---------- entry point ----------
+
+  (function init() {
+    var roomId = new URLSearchParams(window.location.search).get(ROOM_PARAM);
+    if (roomId) {
+      startClient(roomId);
+    }
+  })();
 })();

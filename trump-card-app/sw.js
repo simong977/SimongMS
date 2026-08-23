@@ -1,4 +1,4 @@
-var CACHE_NAME = 'trump-card-app-v3';
+var CACHE_NAME = 'trump-card-app-v4';
 var ASSETS = [
   './',
   './index.html',

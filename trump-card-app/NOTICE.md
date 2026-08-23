@@ -15,4 +15,14 @@ the share-link QR code entirely on-device (no network calls):
 - https://github.com/kazuhikoarase/qrcode-generator
 - License: MIT
 
+The multiplayer "watch together" room uses **PeerJS** (loaded from
+https://unpkg.com/peerjs), a wrapper around WebRTC that also brokers
+the initial peer-to-peer handshake through PeerJS's free public cloud
+server (no account or API key involved). Once a room's participants are
+connected, game data flows directly device-to-device — the host phone
+holds the game state, no backend server of ours is involved.
+
+- https://github.com/peers/peerjs
+- License: MIT
+
 Everything else in this app is original.
