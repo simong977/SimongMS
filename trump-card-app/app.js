@@ -47,7 +47,6 @@
       counterEl.textContent = '대기 중';
       ensureQrDrawn();
       renderParticipants();
-      updateJoinUI();
     } else if (phase === 'idle') {
       counterEl.textContent = '대기 중';
     }
@@ -96,12 +95,30 @@
     });
   }
 
+  // Each participant's <li> carries a data-uid assigned once at join
+  // time — a stable identity that survives reordering. The badge number
+  // shown on screen is never stored; it's always recomputed from DOM
+  // order, so moving an <li> is enough to renumber everyone.
   function renderParticipants() {
-    var count = participantsListEl.children.length;
+    var items = participantsListEl.children;
+    var count = items.length;
     participantsCountEl.textContent = '참가 인원: ' + count + '명';
+    for (var i = 0; i < count; i++) {
+      var li = items[i];
+      var n = i + 1;
+      var badge = li.querySelector('.badge');
+      var label = li.querySelector('.label');
+      var upBtn = li.querySelector('.move-up');
+      var downBtn = li.querySelector('.move-down');
+      if (badge) badge.textContent = String(n);
+      if (label) label.textContent = n + '번 참가자';
+      if (upBtn) upBtn.disabled = i === 0;
+      if (downBtn) downBtn.disabled = i === count - 1;
+    }
+    updateJoinUI();
   }
 
-  function myJoinedNumber() {
+  function myJoinedUid() {
     try {
       return sessionStorage.getItem(JOIN_KEY);
     } catch (e) {
@@ -109,20 +126,22 @@
     }
   }
 
-  function markJoined(n) {
+  function markJoined(uid) {
     try {
-      sessionStorage.setItem(JOIN_KEY, String(n));
+      sessionStorage.setItem(JOIN_KEY, uid);
     } catch (e) {
       /* private mode etc. — join still shows in the shared list */
     }
   }
 
   function updateJoinUI() {
-    var mine = myJoinedNumber();
+    var uid = myJoinedUid();
+    var mine = uid ? participantsListEl.querySelector('li[data-uid="' + uid + '"]') : null;
     if (mine) {
+      var n = Array.prototype.indexOf.call(participantsListEl.children, mine) + 1;
       joinBtn.disabled = true;
       joinBtn.textContent = '참가 완료';
-      joinNoteEl.textContent = '당신은 ' + mine + '번째 참가자예요.';
+      joinNoteEl.textContent = '당신은 ' + n + '번째 참가자예요.';
     } else {
       joinBtn.disabled = false;
       joinBtn.textContent = '참가하기';
@@ -131,20 +150,61 @@
   }
 
   joinBtn.addEventListener('click', function () {
-    if (myJoinedNumber()) return;
-    var n = participantsListEl.children.length + 1;
+    if (myJoinedUid()) return;
+    var uid = String(parseInt(participantsListEl.getAttribute('data-next-uid'), 10) || 0);
+    participantsListEl.setAttribute('data-next-uid', String(parseInt(uid, 10) + 1));
+
     var li = document.createElement('li');
+    li.setAttribute('data-uid', uid);
+
     var badge = document.createElement('span');
     badge.className = 'badge';
-    badge.textContent = String(n);
-    var label = document.createElement('span');
-    label.textContent = n + '번 참가자';
     li.appendChild(badge);
+
+    var label = document.createElement('span');
+    label.className = 'label';
     li.appendChild(label);
+
+    var moveGroup = document.createElement('span');
+    moveGroup.className = 'move-buttons';
+
+    var upBtn = document.createElement('button');
+    upBtn.type = 'button';
+    upBtn.className = 'move-up';
+    upBtn.setAttribute('aria-label', '위로 이동');
+    upBtn.textContent = '▲';
+
+    var downBtn = document.createElement('button');
+    downBtn.type = 'button';
+    downBtn.className = 'move-down';
+    downBtn.setAttribute('aria-label', '아래로 이동');
+    downBtn.textContent = '▼';
+
+    moveGroup.appendChild(upBtn);
+    moveGroup.appendChild(downBtn);
+    li.appendChild(moveGroup);
+
     participantsListEl.appendChild(li);
-    markJoined(n);
+    markJoined(uid);
     renderParticipants();
-    updateJoinUI();
+  });
+
+  // Delegated on the static <ol> (present since page load) rather than
+  // bound per-button, so reordering keeps working even after a remote
+  // participant's join or move causes the list's <li>s to be rebuilt.
+  participantsListEl.addEventListener('click', function (evt) {
+    var btn = evt.target.closest && evt.target.closest('.move-up, .move-down');
+    if (!btn) return;
+    var li = btn.closest('li');
+    if (!li) return;
+    if (btn.classList.contains('move-up')) {
+      var prev = li.previousElementSibling;
+      if (prev) participantsListEl.insertBefore(li, prev);
+    } else {
+      var next = li.nextElementSibling;
+      if (next) participantsListEl.insertBefore(next, li);
+    }
+    renderParticipants();
   });
 
   // ---------- card game (unchanged logic; state lives on deckState's
