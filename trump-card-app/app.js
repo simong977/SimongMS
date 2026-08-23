@@ -273,15 +273,23 @@
     updateControlsVisibility();
   }
 
+  var ruleOverlayTimer = null;
+
   function showRuleOverlay(text) {
     if (!ruleOverlayEl || !text) return;
     ruleOverlayTextEl.textContent = text;
     ruleOverlayEl.hidden = false;
     playRuleSound();
+    if (ruleOverlayTimer) clearTimeout(ruleOverlayTimer);
+    ruleOverlayTimer = window.setTimeout(hideRuleOverlay, 5000);
   }
 
   function hideRuleOverlay() {
     if (ruleOverlayEl) ruleOverlayEl.hidden = true;
+    if (ruleOverlayTimer) {
+      clearTimeout(ruleOverlayTimer);
+      ruleOverlayTimer = null;
+    }
   }
 
   // Pops the big rule overlay once per newly-dealt card (keyed on deck
