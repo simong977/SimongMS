@@ -76,6 +76,31 @@ body {
   white-space: nowrap;
 }
 
+.topbar-right {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rules-btn {
+  flex: 0 0 auto;
+  font-family: inherit;
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(205, 165, 69, 0.14);
+  border: 1px solid var(--gold-dim);
+  color: var(--gold);
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rules-btn[hidden] {
+  display: none;
+}
+
 /* A "view" is one of the three screens (idle / lobby / play). Exactly
    one is ever unhidden; each owns the full remaining height itself so
    swapping views never changes the page's total height. Always pair a
@@ -355,6 +380,24 @@ body {
   to { transform: scale(1) translateY(0) rotate(0); opacity: 1; }
 }
 
+.rule-banner {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 6px 18px;
+  border-radius: 999px;
+  background: rgba(205, 165, 69, 0.16);
+  border: 1px solid var(--gold-dim);
+  color: var(--gold);
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  max-width: 100%;
+}
+
+.rule-banner[hidden] {
+  display: none;
+}
+
 .hint {
   flex: 0 0 auto;
   min-height: 16px;
@@ -363,6 +406,120 @@ body {
   text-align: center;
   margin: 0;
   color: var(--cream);
+}
+
+/* ---- rules modal ---- */
+.rules-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(2, 20, 12, 0.78);
+}
+
+.rules-modal[hidden] {
+  display: none;
+}
+
+.rules-modal-inner {
+  width: 100%;
+  max-width: 420px;
+  max-height: 82vh;
+  overflow-y: auto;
+  background: linear-gradient(180deg, #0f4530, #062416);
+  border: 1px solid var(--gold-dim);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 22px 44px rgba(2, 20, 12, 0.6);
+}
+
+.rules-modal-header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rules-modal-header h2 {
+  margin: 0;
+  font-family: "Noto Serif KR", serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--cream);
+}
+
+.rules-close-btn {
+  flex: 0 0 auto;
+  background: none;
+  border: none;
+  color: var(--cream);
+  font-size: 16px;
+  line-height: 1;
+  padding: 6px 8px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rules-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rules-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rule-rank {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--gold);
+  color: #2a1e05;
+  font-weight: 700;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rule-input,
+.rule-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 13px;
+  color: var(--cream);
+}
+
+.rule-input {
+  font-family: inherit;
+  padding: 7px 10px;
+  border-radius: 8px;
+  background: rgba(243, 234, 210, 0.08);
+  border: 1px solid rgba(243, 234, 210, 0.28);
+}
+
+.rule-input:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.rule-text {
+  padding: 7px 2px;
+  opacity: 0.85;
+  word-break: break-word;
 }
 
 .controls {

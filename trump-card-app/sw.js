@@ -2,7 +2,7 @@
 // re-installs the service worker (and re-fetches these files) when this
 // script's own bytes change, so an unbumped version silently keeps serving
 // a stale app.js forever to anyone who visited before.
-var CACHE_NAME = 'trump-card-app-v6';
+var CACHE_NAME = 'trump-card-app-v7';
 var ASSETS = [
   './',
   './index.html',
