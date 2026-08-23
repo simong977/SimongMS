@@ -1,4 +1,8 @@
-var CACHE_NAME = 'trump-card-app-v4';
+// Bump this on every change to any cached file below — the browser only
+// re-installs the service worker (and re-fetches these files) when this
+// script's own bytes change, so an unbumped version silently keeps serving
+// a stale app.js forever to anyone who visited before.
+var CACHE_NAME = 'trump-card-app-v5';
 var ASSETS = [
   './',
   './index.html',
