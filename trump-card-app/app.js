@@ -11,25 +11,30 @@
     '1': 'A', '2': '2', '3': '3', '4': '4', '5': '5', '6': '6', '7': '7',
     '8': '8', '9': '9', '10': '10', jack: 'J', queen: 'Q', king: 'K',
   };
+  // Each rule is a short name (shown big) plus an optional description
+  // (shown small, up to two lines) — both host-editable, broadcast like
+  // everything else in `state`.
   var DEFAULT_RULES = {
-    '1': '엄지왕',
-    '2': '지목',
-    '3': '나 마셔',
-    '4': '여자 마셔',
-    '5': '손병호게임',
-    '6': '남자 마셔',
-    '7': '눈치게임',
-    '8': '파트너 지정',
-    '9': '카테고리',
-    '10': '룰 메이커',
-    jack: '전사람',
-    queen: '퀘스천 또는 랜덤게임',
-    king: '킹잔 채우기, 4번째 킹은 킹잔 마시기',
+    '1': { name: '엄지왕', desc: '엄지로 하는 눈치게임\n3바퀴를 돌 동안 미션을 완수해야한다' },
+    '2': { name: '지목', desc: '지목당한 사람이 마신다' },
+    '3': { name: '나 마셔', desc: '' },
+    '4': { name: '여자 마셔', desc: '' },
+    '5': { name: '손병호게임', desc: '' },
+    '6': { name: '남자 마셔', desc: '' },
+    '7': { name: '눈치게임', desc: '' },
+    '8': { name: '파트너 지정', desc: '파트너를 지정하고 당한 사람은 8번 카드를 뽑은 사람이 술을 마실 때 같이 마신다' },
+    '9': { name: '카테고리', desc: '카테고리를 지정하면 시계 방향으로 대답을 해야한다 (카테고리 음료수 : 게토레이.. 포카리.. 등)' },
+    '10': { name: '룰 메이커', desc: '잔 내려놓을 시에 박수 등 룰을 만든다' },
+    jack: { name: '전사람 마셔', desc: '' },
+    queen: { name: '퀘스천 또는 랜덤게임', desc: '' },
+    king: { name: '킹잔 채우기, 4번째 킹은 킹잔 마시기', desc: '' },
   };
 
   function cloneRules() {
     var copy = {};
-    RANKS.forEach(function (r) { copy[r] = DEFAULT_RULES[r]; });
+    RANKS.forEach(function (r) {
+      copy[r] = { name: DEFAULT_RULES[r].name, desc: DEFAULT_RULES[r].desc };
+    });
     return copy;
   }
 
@@ -58,6 +63,7 @@
   var hintEl = document.getElementById('hint');
   var ruleOverlayEl = document.getElementById('ruleOverlay');
   var ruleOverlayTextEl = document.getElementById('ruleOverlayText');
+  var ruleOverlayDescEl = document.getElementById('ruleOverlayDesc');
   var ruleOverlayHintEl = document.getElementById('ruleOverlayHint');
   var ruleTimerSelect = document.getElementById('ruleTimerSelect');
   var nextBtn = document.getElementById('nextBtn');
@@ -311,10 +317,15 @@
     }
   }
 
-  // duration is in seconds; 0 (or unset) means tap-only, no auto-close.
-  function showRuleOverlay(text) {
-    if (!ruleOverlayEl || !text) return;
-    ruleOverlayTextEl.textContent = text;
+  // rule is { name, desc }; duration is in seconds, 0 (or unset) means
+  // tap-only, no auto-close.
+  function showRuleOverlay(rule) {
+    if (!ruleOverlayEl || !rule || !rule.name) return;
+    ruleOverlayTextEl.textContent = rule.name;
+    if (ruleOverlayDescEl) {
+      ruleOverlayDescEl.textContent = rule.desc || '';
+      ruleOverlayDescEl.hidden = !rule.desc;
+    }
     ruleOverlayEl.hidden = false;
     playRuleSound();
     clearRuleOverlayTimers();
@@ -359,30 +370,56 @@
     rulesModalTitle.textContent = isHost ? '룰 수정' : '룰 확인';
     rulesListEl.innerHTML = '';
     RANKS.forEach(function (rank) {
+      var rule = state.rules[rank] || { name: '', desc: '' };
       var li = document.createElement('li');
+
+      var head = document.createElement('div');
+      head.className = 'rule-row-head';
 
       var badge = document.createElement('span');
       badge.className = 'rule-rank';
       badge.textContent = RANK_LABELS[rank];
-      li.appendChild(badge);
+      head.appendChild(badge);
 
       if (isHost) {
-        var input = document.createElement('input');
-        input.type = 'text';
-        input.className = 'rule-input';
-        input.maxLength = 40;
-        input.value = state.rules[rank] || '';
-        input.addEventListener('change', function () {
-          state.rules[rank] = sanitizeRuleText(input.value);
-          input.value = state.rules[rank];
+        var nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.className = 'rule-input rule-name-input';
+        nameInput.placeholder = '룰 이름';
+        nameInput.maxLength = 20;
+        nameInput.value = rule.name || '';
+        nameInput.addEventListener('change', function () {
+          rule.name = sanitizeRuleName(nameInput.value);
+          nameInput.value = rule.name;
           broadcastState();
         });
-        li.appendChild(input);
+        head.appendChild(nameInput);
+        li.appendChild(head);
+
+        var descInput = document.createElement('textarea');
+        descInput.className = 'rule-input rule-desc-input';
+        descInput.placeholder = '설명 (선택, 두 줄까지)';
+        descInput.rows = 2;
+        descInput.value = rule.desc || '';
+        descInput.addEventListener('change', function () {
+          rule.desc = sanitizeRuleDesc(descInput.value);
+          descInput.value = rule.desc;
+          broadcastState();
+        });
+        li.appendChild(descInput);
       } else {
-        var span = document.createElement('span');
-        span.className = 'rule-text';
-        span.textContent = state.rules[rank] || '';
-        li.appendChild(span);
+        var nameText = document.createElement('span');
+        nameText.className = 'rule-text rule-name-text';
+        nameText.textContent = rule.name || '';
+        head.appendChild(nameText);
+        li.appendChild(head);
+
+        if (rule.desc) {
+          var descText = document.createElement('div');
+          descText.className = 'rule-text rule-desc-text';
+          descText.textContent = rule.desc;
+          li.appendChild(descText);
+        }
       }
 
       rulesListEl.appendChild(li);
@@ -427,8 +464,15 @@
     return name || fallback;
   }
 
-  function sanitizeRuleText(raw) {
-    return String(raw || '').trim().slice(0, 40);
+  function sanitizeRuleName(raw) {
+    return String(raw || '').trim().slice(0, 20);
+  }
+
+  // Allows an internal line break (e.g. a two-line description like the A
+  // rule's) but caps it at two lines and a sane overall length.
+  function sanitizeRuleDesc(raw) {
+    var text = String(raw || '').replace(/\r\n/g, '\n').trim();
+    return text.split('\n').slice(0, 2).join('\n').slice(0, 80);
   }
 
   // ---------- card game (host-authoritative; only the host ever calls
