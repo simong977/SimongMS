@@ -24,7 +24,10 @@
 <div id="app">
   <header class="topbar">
     <h1>트럼프 카드</h1>
-    <div class="counter" id="counter">대기 중</div>
+    <div class="topbar-right">
+      <button id="rulesBtn" class="rules-btn" type="button" hidden>룰 수정</button>
+      <div class="counter" id="counter">대기 중</div>
+    </div>
   </header>
 
   <section id="idleView" class="view">
@@ -55,6 +58,7 @@
           <use id="cardUse" href="#heart_king"/>
         </svg>
       </div>
+      <p class="rule-banner" id="ruleBanner" hidden></p>
       <p class="hint" id="hint"></p>
     </main>
 
@@ -63,6 +67,16 @@
       <button id="nextBtn" class="btn btn-primary" type="button">다음 카드</button>
     </footer>
   </section>
+</div>
+
+<div id="rulesModal" class="rules-modal" hidden>
+  <div class="rules-modal-inner">
+    <div class="rules-modal-header">
+      <h2 id="rulesModalTitle">룰 목록</h2>
+      <button id="rulesCloseBtn" class="rules-close-btn" type="button" aria-label="닫기">✕</button>
+    </div>
+    <ol class="rules-list" id="rulesList"></ol>
+  </div>
 </div>
 
 <script src="qrcode.lib.js"></script>

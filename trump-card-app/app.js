@@ -7,6 +7,36 @@
   var DEFAULT_HOST_NAME = '방장';
   var DEFAULT_GUEST_NAME = '참가자';
 
+  var RANK_LABELS = {
+    '1': 'A', '2': '2', '3': '3', '4': '4', '5': '5', '6': '6', '7': '7',
+    '8': '8', '9': '9', '10': '10', jack: 'J', queen: 'Q', king: 'K',
+  };
+  var DEFAULT_RULES = {
+    '1': '엄지왕',
+    '2': '지목',
+    '3': '나 마셔',
+    '4': '여자 마셔',
+    '5': '손병호게임',
+    '6': '남자 마셔',
+    '7': '눈치게임',
+    '8': '파트너 지정',
+    '9': '카테고리',
+    '10': '룰 메이커',
+    jack: '전사람',
+    queen: '퀘스천 또는 랜덤게임',
+    king: '킹잔 채우기, 4번째 킹은 킹잔 마시기',
+  };
+
+  function cloneRules() {
+    var copy = {};
+    RANKS.forEach(function (r) { copy[r] = DEFAULT_RULES[r]; });
+    return copy;
+  }
+
+  function rankOf(cardId) {
+    return cardId.slice(cardId.indexOf('_') + 1);
+  }
+
   var idleView = document.getElementById('idleView');
   var lobbyView = document.getElementById('lobbyView');
   var playView = document.getElementById('playView');
@@ -26,9 +56,16 @@
   var cardUse = document.getElementById('cardUse');
   var counterEl = document.getElementById('counter');
   var hintEl = document.getElementById('hint');
+  var ruleBannerEl = document.getElementById('ruleBanner');
   var nextBtn = document.getElementById('nextBtn');
   var resetBtn = document.getElementById('resetBtn');
   var controlsFooter = document.querySelector('.controls');
+
+  var rulesBtn = document.getElementById('rulesBtn');
+  var rulesModal = document.getElementById('rulesModal');
+  var rulesModalTitle = document.getElementById('rulesModalTitle');
+  var rulesCloseBtn = document.getElementById('rulesCloseBtn');
+  var rulesListEl = document.getElementById('rulesList');
 
   // ---------- networking state ----------
   // The host phone holds the one authoritative copy of `state` and
@@ -50,6 +87,7 @@
     turnUid: null, // whose turn it is to deal; null = no one has joined yet
     deck: [],
     position: -1,
+    rules: cloneRules(), // rank -> rule text; host-editable, broadcast like everything else
   };
 
   // ---------- rendering: purely derived from `state` (+ isHost/myUid for
@@ -69,6 +107,8 @@
     } else if (state.phase === 'playing') {
       renderCard(false);
     }
+
+    if (rulesModal && !rulesModal.hidden) renderRulesModal();
 
     updateControlsVisibility();
   }
@@ -93,6 +133,11 @@
     resetBtn.hidden = !isHost;
     var atLastCard = state.position === state.deck.length - 1;
     nextBtn.disabled = !isMyTurn() || atLastCard;
+
+    if (rulesBtn) {
+      rulesBtn.hidden = state.phase !== 'playing';
+      rulesBtn.textContent = isHost ? '룰 수정' : '룰 확인';
+    }
   }
 
   function renderParticipants() {
@@ -166,6 +211,7 @@
     if (state.position < 0 || state.position >= state.deck.length) return;
     cardUse.setAttribute('href', '#' + state.deck[state.position]);
     counterEl.textContent = (state.position + 1) + ' / ' + state.deck.length;
+    renderRuleBanner();
 
     if (animate) {
       cardEl.classList.remove('flash');
@@ -182,6 +228,50 @@
     }
 
     updateControlsVisibility();
+  }
+
+  function renderRuleBanner() {
+    if (!ruleBannerEl) return;
+    var card = state.deck[state.position];
+    var text = card ? state.rules[rankOf(card)] : '';
+    ruleBannerEl.textContent = text || '';
+    ruleBannerEl.hidden = !text;
+  }
+
+  function renderRulesModal() {
+    if (!rulesListEl) return;
+    rulesModalTitle.textContent = isHost ? '룰 수정' : '룰 확인';
+    rulesListEl.innerHTML = '';
+    RANKS.forEach(function (rank) {
+      var li = document.createElement('li');
+
+      var badge = document.createElement('span');
+      badge.className = 'rule-rank';
+      badge.textContent = RANK_LABELS[rank];
+      li.appendChild(badge);
+
+      if (isHost) {
+        var input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'rule-input';
+        input.maxLength = 40;
+        input.value = state.rules[rank] || '';
+        input.addEventListener('change', function () {
+          state.rules[rank] = sanitizeRuleText(input.value);
+          input.value = state.rules[rank];
+          renderRuleBanner();
+          broadcastState();
+        });
+        li.appendChild(input);
+      } else {
+        var span = document.createElement('span');
+        span.className = 'rule-text';
+        span.textContent = state.rules[rank] || '';
+        li.appendChild(span);
+      }
+
+      rulesListEl.appendChild(li);
+    });
   }
 
   // ---------- QR / share link ----------
@@ -220,6 +310,10 @@
   function sanitizeName(raw, fallback) {
     var name = String(raw || '').trim().slice(0, 12);
     return name || fallback;
+  }
+
+  function sanitizeRuleText(raw) {
+    return String(raw || '').trim().slice(0, 40);
   }
 
   // ---------- card game (host-authoritative; only the host ever calls
@@ -501,6 +595,19 @@
     if (!isHost) return;
     hostStartNewGame();
   });
+
+  if (rulesBtn) {
+    rulesBtn.addEventListener('click', function () {
+      renderRulesModal();
+      rulesModal.hidden = false;
+    });
+  }
+
+  if (rulesCloseBtn) {
+    rulesCloseBtn.addEventListener('click', function () {
+      rulesModal.hidden = true;
+    });
+  }
 
   // ---------- entry point ----------
 
