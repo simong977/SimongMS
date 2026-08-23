@@ -303,9 +303,19 @@
   // ---------- initial render from whatever is already on the page
   // (a friend joining a room already in progress) ----------
 
-  applyPhase(currentPhase());
-  if (currentPhase() === 'playing' && getState().position >= 0) {
-    renderFromState(false);
+  // This writes to idleView/lobbyView/playView/card/etc. with no click
+  // behind it — on a live doc, an unmarked element that a script mutates
+  // with no gesture gets silently desynced (a claude:sync-off fires from
+  // it). Doing this raw on load was tripping that on every join-mid-game,
+  // which then got misread as "this viewer lost write access" below. Run
+  // it through artifact.sync() (the documented escape hatch for a
+  // legitimate no-gesture write) once the runtime is known; plain calls
+  // are safe when there is no live-doc runtime to trip at all.
+  function initialCatchUp() {
+    applyPhase(currentPhase());
+    if (currentPhase() === 'playing' && getState().position >= 0) {
+      renderFromState(false);
+    }
   }
 
   // No multiplayer runtime available (the downloaded file, GitHub
@@ -321,13 +331,29 @@
   (function initMultiplayer() {
     try {
       if (!window.claude || typeof window.claude.use !== 'function') {
+        initialCatchUp();
         fallBackToSoloPlay();
         return;
       }
       window.claude.use('artifact').then(function (artifact) {
-        if (!artifact) fallBackToSoloPlay();
+        if (!artifact) {
+          initialCatchUp();
+          fallBackToSoloPlay();
+          return;
+        }
+        if (typeof artifact.sync === 'function') {
+          artifact.sync(initialCatchUp).catch(function () {
+            initialCatchUp();
+          });
+        } else {
+          initialCatchUp();
+        }
+      }, function () {
+        initialCatchUp();
+        fallBackToSoloPlay();
       });
     } catch (e) {
+      initialCatchUp();
       fallBackToSoloPlay();
     }
   })();
@@ -347,7 +373,16 @@
     }, 600);
   }
 
-  document.addEventListener('claude:sync-off', lockToReadOnly);
+  // A desynced element (claude:sync-off) only means that ONE region
+  // stopped saving — a genuinely read-only viewer is the case where the
+  // whole page, down to <body> itself, goes read-only. Treat only that as
+  // "this viewer lost write access"; anything narrower must not lock out
+  // someone who can still write.
+  document.addEventListener('claude:sync-off', function (evt) {
+    if (evt.target === document.body || document.body.getAttribute('artifact-sync-state') === 'off') {
+      lockToReadOnly();
+    }
+  });
 
   // Attribute-only changes (phase, deck position) are patched into the
   // DOM for us and just need a re-render; a brand new element (someone
