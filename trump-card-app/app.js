@@ -64,6 +64,7 @@
   var ruleOverlayEl = document.getElementById('ruleOverlay');
   var ruleOverlayTextEl = document.getElementById('ruleOverlayText');
   var ruleOverlayDescEl = document.getElementById('ruleOverlayDesc');
+  var ruleOverlayCountEl = document.getElementById('ruleOverlayCount');
   var ruleOverlayHintEl = document.getElementById('ruleOverlayHint');
   var ruleTimerSelect = document.getElementById('ruleTimerSelect');
   var nextBtn = document.getElementById('nextBtn');
@@ -317,11 +318,20 @@
     }
   }
 
-  // rule is { name, desc }; duration is in seconds, 0 (or unset) means
-  // tap-only, no auto-close.
-  function showRuleOverlay(rule) {
+  // rule is { name, desc }; kingOrdinal is which king (1-4) this is among
+  // the ones dealt so far this game, or null for every other rank; duration
+  // is in seconds, 0 (or unset) means tap-only, no auto-close.
+  function showRuleOverlay(rule, kingOrdinal) {
     if (!ruleOverlayEl || !rule || !rule.name) return;
     ruleOverlayTextEl.textContent = rule.name;
+    if (ruleOverlayCountEl) {
+      if (kingOrdinal) {
+        ruleOverlayCountEl.textContent = '(' + kingOrdinal + '/4)';
+        ruleOverlayCountEl.hidden = false;
+      } else {
+        ruleOverlayCountEl.hidden = true;
+      }
+    }
     if (ruleOverlayDescEl) {
       ruleOverlayDescEl.textContent = rule.desc || '';
       ruleOverlayDescEl.hidden = !rule.desc;
@@ -362,7 +372,14 @@
     var card = state.deck[state.position];
     if (!card || state.dealSeq === lastRuleShownSeq) return;
     lastRuleShownSeq = state.dealSeq;
-    showRuleOverlay(state.rules[rankOf(card)]);
+    var rank = rankOf(card);
+    var kingOrdinal = null;
+    if (rank === 'king') {
+      kingOrdinal = state.deck.slice(0, state.position + 1).filter(function (c) {
+        return rankOf(c) === 'king';
+      }).length;
+    }
+    showRuleOverlay(state.rules[rank], kingOrdinal);
   }
 
   function renderRulesModal() {
