@@ -1,0 +1,393 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --felt-hi: #1c6b45;
+  --felt-lo: #05301f;
+  --gold: #cda545;
+  --gold-dim: rgba(205, 165, 69, 0.55);
+  --cream: #f3ead2;
+  --shadow: rgba(2, 20, 12, 0.55);
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  height: 100dvh;
+  background: radial-gradient(ellipse at 50% -10%, var(--felt-hi) 0%, var(--felt-lo) 62%, #021a10 100%);
+  color: var(--cream);
+  font-family: "Noto Sans KR", -apple-system, "Malgun Gothic", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Everything below is sized to always fit one screen — no scrolling,
+   even inside a preview pane that can't scroll (a shared file opened
+   in a QuickLook-style viewer, an embedded artifact frame). The card
+   scales off vh, not vw, so a short/wide viewport shrinks it instead
+   of overflowing. */
+#app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+.topbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: clamp(10px, 3vh, 26px) 20px 4px;
+}
+
+.topbar h1 {
+  font-family: "Noto Serif KR", serif;
+  font-weight: 700;
+  font-size: clamp(16px, 4vh, 21px);
+  letter-spacing: 0.02em;
+  margin: 0;
+  color: var(--cream);
+}
+
+.counter {
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: var(--gold);
+  border: 1px solid var(--gold-dim);
+  padding: 4px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* A "view" is one of the three screens (idle / lobby / play). Exactly
+   one is ever unhidden; each owns the full remaining height itself so
+   swapping views never changes the page's total height. Always pair a
+   `display` rule with an explicit [hidden] override — the `hidden`
+   attribute alone loses to any later same-specificity `display` rule,
+   which is exactly the bug that once left a "closed" panel covering
+   (and blocking clicks on) the whole page. */
+.view {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.view[hidden] {
+  display: none;
+}
+
+/* ---- idle view ---- */
+#idleView {
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 20px;
+  text-align: center;
+}
+
+.idle-copy {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.85;
+  max-width: 28ch;
+}
+
+#idleView .btn {
+  flex: 0 0 auto;
+  width: min(100%, 220px);
+}
+
+/* ---- lobby view ---- */
+#lobbyView {
+  align-items: center;
+  justify-content: center;
+  padding: clamp(6px, 1.6vh, 16px) 20px 0;
+  gap: clamp(6px, 1.4vh, 12px);
+}
+
+.qr-box {
+  flex: 0 0 auto;
+  width: min(34vh, 150px);
+  height: min(34vh, 150px);
+  padding: 8px;
+  background: #ffffff;
+  border-radius: 10px;
+}
+
+.qr-box svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.qr-url {
+  flex: 0 0 auto;
+  max-width: 260px;
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.01em;
+  color: var(--cream);
+  opacity: 0.75;
+  text-align: center;
+  word-break: break-all;
+}
+
+.qr-copy-btn {
+  flex: 0 0 auto;
+  font-family: inherit;
+  font-size: 12px;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: rgba(205, 165, 69, 0.14);
+  border: 1px solid var(--gold-dim);
+  color: var(--gold);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.qr-copy-btn:active {
+  transform: scale(0.97);
+}
+
+.participants {
+  flex: 0 1 auto;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.participants-count {
+  flex: 0 0 auto;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gold);
+  text-align: center;
+}
+
+.participants-list {
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: 22vh;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.participants-list li {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border-radius: 10px;
+  background: rgba(243, 234, 210, 0.08);
+  border: 1px solid rgba(243, 234, 210, 0.14);
+  font-size: 13px;
+}
+
+.participants-list li .badge {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: #2a1e05;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.participants-list li .label {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.move-buttons {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+}
+
+
+.move-buttons button {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border-radius: 6px;
+  border: 1px solid rgba(243, 234, 210, 0.28);
+  background: rgba(243, 234, 210, 0.08);
+  color: var(--cream);
+  font-size: 9px;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.move-buttons button:active {
+  transform: scale(0.92);
+}
+
+.move-buttons button:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.move-buttons button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.join-note {
+  flex: 0 0 auto;
+  min-height: 14px;
+  margin: 0;
+  font-size: 12px;
+  color: var(--gold);
+  text-align: center;
+}
+
+.lobby-actions {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  padding: 6px 0 clamp(10px, 2vh, 18px);
+}
+
+/* ---- play view ---- */
+#playView {
+  padding: 0;
+}
+
+.stage {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 20px;
+  gap: clamp(6px, 1.6vh, 14px);
+}
+
+.card-slot {
+  flex: 0 1 auto;
+  min-height: 0;
+  height: min(50vh, 320px);
+  aspect-ratio: 5 / 7;
+}
+
+/* The card art (base + corner index + illustration, all in one) comes
+   from the embedded <symbol> defs — see NOTICE.md. */
+.playing-card {
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  box-shadow:
+    0 2px 0 rgba(255, 255, 255, 0.5),
+    0 22px 44px var(--shadow);
+}
+
+.playing-card.flash {
+  animation: cardIn 320ms cubic-bezier(.2, .7, .3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .playing-card.flash { animation: none; }
+}
+
+@keyframes cardIn {
+  from { transform: scale(0.9) translateY(14px) rotate(-1.5deg); opacity: 0; }
+  60% { opacity: 1; }
+  to { transform: scale(1) translateY(0) rotate(0); opacity: 1; }
+}
+
+.hint {
+  flex: 0 0 auto;
+  min-height: 16px;
+  font-size: 12px;
+  opacity: 0.8;
+  text-align: center;
+  margin: 0;
+  color: var(--cream);
+}
+
+.controls {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 12px;
+  padding: 10px 20px calc(12px + env(safe-area-inset-bottom));
+}
+
+.controls[hidden] {
+  display: none;
+}
+
+.btn {
+  border: none;
+  border-radius: 12px;
+  padding: clamp(12px, 2.6vh, 16px) 12px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 90ms ease, opacity 150ms ease, filter 150ms ease;
+}
+
+.btn:active { transform: scale(0.97); }
+.btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+.btn-primary {
+  background: linear-gradient(180deg, #e8d18f, var(--gold));
+  color: #2a1e05;
+  flex: 2;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
+}
+
+.btn-primary:disabled {
+  background: rgba(243, 234, 210, 0.25);
+  color: rgba(243, 234, 210, 0.6);
+  box-shadow: none;
+  cursor: default;
+  transform: none;
+}
+
+.btn-secondary {
+  background: rgba(243, 234, 210, 0.1);
+  color: var(--cream);
+  border: 1px solid rgba(243, 234, 210, 0.28);
+  flex: 1;
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: default;
+  transform: none;
+}
