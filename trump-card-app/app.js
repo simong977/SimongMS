@@ -82,12 +82,17 @@
     return myUid !== null && myUid === state.turnUid;
   }
 
+  // nextBtn is DISABLED between turns, never removed from layout — turns
+  // pass constantly during normal play, and hiding/showing it (or the
+  // whole footer) on every pass shifted the card up and down each time.
+  // resetBtn's hidden state is host-only and never changes mid-session, so
+  // it's safe to actually remove from layout.
   function updateControlsVisibility() {
     if (!controlsFooter) return;
-    var mine = isMyTurn();
-    controlsFooter.hidden = state.phase !== 'playing' || !(isHost || mine);
+    controlsFooter.hidden = state.phase !== 'playing';
     resetBtn.hidden = !isHost;
-    nextBtn.hidden = !mine;
+    var atLastCard = state.position === state.deck.length - 1;
+    nextBtn.disabled = !isMyTurn() || atLastCard;
   }
 
   function renderParticipants() {
@@ -171,11 +176,9 @@
     if (state.position === state.deck.length - 1) {
       hintEl.textContent = isHost ? '마지막 카드예요. 다시 섞으면 새로 시작해요.' : '마지막 카드예요.';
       nextBtn.textContent = '카드 다 봤어요';
-      nextBtn.disabled = true;
     } else {
       hintEl.textContent = turnHintText();
       nextBtn.textContent = '다음 카드';
-      nextBtn.disabled = false;
     }
 
     updateControlsVisibility();
